@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Beacon — Merchant of the Realm</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f4e4bc;
+    --parchment-dark: #e8d49a;
+    --ink: #2c1a0e;
+    --ink-light: #4a3020;
+    --gold: #c9922a;
+    --gold-bright: #f0b840;
+    --gold-dim: #8a6015;
+    --crimson: #8b1a1a;
+    --crimson-dark: #5a0f0f;
+    --wood: #3d1f0a;
+    --wood-light: #6b3a1f;
+    --stone: #2a2420;
+    --shadow: rgba(0,0,0,0.6);
+    --glow: rgba(201,146,42,0.3);
+    --cart-width: 380px;
+    /* tab accent colours */
+    --magic-accent: #7b5cf0;
+    --general-accent: #c9922a;
+    --tattoo-accent: #c0364a;
+    --smith-accent: #5a8fd4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: var(--stone);
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(61,31,10,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(139,26,26,0.15) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff08' stroke-width='1'%3E%3Crect x='0' y='0' width='80' height='80'/%3E%3Crect x='20' y='20' width='40' height='40'/%3E%3C/g%3E%3C/svg%3E");
+    min-height: 100vh;
+    font-family: 'IM Fell English', serif;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ===== HEADER ===== */
+  .shop-header {
+    background: linear-gradient(180deg, #1a0a02 0%, var(--wood) 40%, var(--wood-light) 100%);
+    border-bottom: 4px solid var(--gold);
+    box-shadow: 0 4px 30px rgba(201,146,42,0.4);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    flex-wrap: wrap;
+  }
+  .shop-title-block { flex: 1; min-width: 200px; }
+  .shop-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(1.1rem, 3vw, 1.8rem);
+    color: var(--gold-bright);
+    text-shadow: 0 0 20px rgba(240,184,64,0.6), 2px 2px 4px #000;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+  }
+  .shop-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--parchment-dark);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 2px;
+    opacity: 0.8;
+    font-style: italic;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  /* ===== BALANCE PANEL ===== */
+  .balance-panel {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: rgba(0,0,0,0.4);
+    border: 2px solid var(--gold-dim);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .balance-label { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--parchment-dark); }
+  .coin-display { display: flex; align-items: center; gap: 0.4rem; }
+  .coin-icon { font-size: 1.3rem; filter: drop-shadow(0 0 4px rgba(240,184,64,0.8)); }
+  .balance-value { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700; color: var(--gold-bright); text-shadow: 0 0 10px rgba(240,184,64,0.5); min-width: 50px; text-align: right; }
+  .balance-edit-btn { background: none; border: 1px solid var(--gold-dim); color: var(--gold); padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.1em; transition: all 0.2s; }
+  .balance-edit-btn:hover { background: var(--gold-dim); color: #fff; }
+
+  /* ===== CART BUTTON ===== */
+  .cart-btn {
+    position: relative;
+    background: linear-gradient(135deg, var(--crimson-dark), var(--crimson));
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 0.55rem 1rem;
+    color: var(--parchment);
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    white-space: nowrap;
+  }
+  .cart-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(139,26,26,0.5); }
+  .cart-badge { background: var(--gold-bright); color: var(--ink); font-size: 0.65rem; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; padding: 0 4px; transition: transform 0.2s; }
+  .cart-badge.bump { animation: badgeBump 0.3s ease; }
+  @keyframes badgeBump { 0%,100% { transform: scale(1); } 50% { transform: scale(1.5); } }
+
+  /* ===== TABS ===== */
+  .tab-bar {
+    background: rgba(0,0,0,0.5);
+    border-bottom: 2px solid rgba(201,146,42,0.25);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 0.9rem 1.5rem;
+    border: none;
+    background: none;
+    color: rgba(232,212,154,0.5);
+    cursor: pointer;
+    transition: all 0.25s;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    top: 2px;
+  }
+  .tab-btn:hover { color: var(--parchment-dark); }
+  .tab-btn.active { color: var(--parchment); }
+  .tab-btn[data-tab="magic"].active { border-bottom-color: var(--magic-accent); color: #c0aeff; }
+  .tab-btn[data-tab="general"].active { border-bottom-color: var(--general-accent); color: var(--gold-bright); }
+  .tab-btn[data-tab="tattoo"].active { border-bottom-color: var(--tattoo-accent); color: #ff8899; }
+  .tab-btn[data-tab="smith"].active { border-bottom-color: var(--smith-accent); color: #90c4ff; }
+
+  /* ===== CART DRAWER ===== */
+  .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+  .cart-drawer {
+    position: fixed; top: 0; right: 0;
+    width: var(--cart-width); height: 100vh;
+    background: linear-gradient(180deg, #1c1008 0%, #2a1a0e 100%);
+    border-left: 2px solid var(--gold-dim);
+    box-shadow: -8px 0 40px rgba(0,0,0,0.8);
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 400;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .cart-drawer.open { transform: translateX(0); }
+  .cart-header { background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--gold-dim); padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .cart-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: var(--gold-bright); letter-spacing: 0.1em; }
+  .cart-close { background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--parchment-dark); width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .cart-close:hover { background: var(--crimson-dark); border-color: var(--crimson); color: #fff; }
+  .cart-items { flex: 1; overflow-y: auto; padding: 0.8rem; }
+  .cart-items::-webkit-scrollbar { width: 4px; }
+  .cart-items::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 4px; }
+  .cart-empty { text-align: center; padding: 3rem 1rem; color: var(--parchment-dark); opacity: 0.6; }
+  .cart-empty .empty-icon { font-size: 3rem; margin-bottom: 0.8rem; opacity: 0.5; }
+  .cart-empty p { font-style: italic; font-size: 0.9rem; }
+  .cart-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); animation: cartItemIn 0.25s ease; }
+  @keyframes cartItemIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+  .cart-item:hover { background: rgba(255,255,255,0.03); }
+  .cart-item-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .cart-item-info { flex: 1; min-width: 0; }
+  .cart-item-name { font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 600; color: var(--parchment); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cart-item-unit { font-size: 0.68rem; color: var(--gold-dim); margin-top: 2px; }
+  .cart-qty-controls { display: flex; align-items: center; gap: 0.3rem; }
+  .qty-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--parchment); width: 24px; height: 24px; border-radius: 3px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: 'Cinzel', serif; }
+  .qty-btn:hover:not(:disabled) { background: var(--gold-dim); border-color: var(--gold); }
+  .qty-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .qty-btn.danger:hover:not(:disabled) { background: var(--crimson-dark); border-color: var(--crimson); }
+  .qty-value { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: var(--gold-bright); min-width: 20px; text-align: center; }
+  .cart-item-total { font-family: 'Cinzel', serif; font-size: 0.8rem; font-weight: 700; color: var(--parchment-dark); white-space: nowrap; }
+  .cart-footer { border-top: 1px solid var(--gold-dim); padding: 1rem 1.2rem; background: rgba(0,0,0,0.3); flex-shrink: 0; }
+  .cart-summary { margin-bottom: 0.8rem; }
+  .cart-summary-row { display: flex; justify-content: space-between; align-items: center; padding: 0.2rem 0; }
+  .cart-summary-row .slabel { font-size: 0.7rem; color: #8a7060; letter-spacing: 0.1em; text-transform: uppercase; }
+  .cart-summary-row .sval { font-size: 0.82rem; color: var(--parchment-dark); }
+  .cart-summary-row.total { border-top: 1px solid rgba(201,146,42,0.3); margin-top: 0.4rem; padding-top: 0.5rem; }
+  .cart-summary-row.total .slabel { font-size: 0.75rem; color: var(--gold-dim); }
+  .cart-summary-row.total .sval { font-size: 1.05rem; color: var(--gold-bright); font-weight: 700; }
+  .affordability-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin: 0.6rem 0 0.4rem; }
+  .affordability-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease, background 0.4s ease; }
+  .affordability-msg { font-size: 0.72rem; font-family: 'Cinzel', serif; letter-spacing: 0.05em; margin-bottom: 0.8rem; }
+  .checkout-btn { width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #2a6b30, #3a8a40); border: 2px solid rgba(255,255,255,0.15); border-radius: 6px; color: #e0ffe0; font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s; margin-bottom: 0.5rem; }
+  .checkout-btn:hover:not(:disabled) { background: linear-gradient(135deg, #3a8a40, #4aaa50); transform: translateY(-1px); }
+  .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .clear-cart-btn { width: 100%; padding: 0.5rem; background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(232,212,154,0.5); font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s; }
+  .clear-cart-btn:hover { color: var(--crimson); border-color: var(--crimson); }
+
+  /* ===== MODAL ===== */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 500; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; backdrop-filter: blur(4px); }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box { background: linear-gradient(180deg, #2a1a0e, #1c1008); border: 2px solid var(--gold-dim); border-radius: 8px; padding: 2rem; max-width: 360px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+  .modal-title { font-family: 'Cinzel Decorative', cursive; font-size: 1.1rem; color: var(--gold-bright); margin-bottom: 0.3rem; text-align: center; }
+  .modal-sub { font-size: 0.82rem; color: var(--parchment-dark); text-align: center; margin-bottom: 1.2rem; font-style: italic; }
+  .modal-input-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .modal-coin { font-size: 1.8rem; }
+  .modal-input { flex: 1; background: rgba(0,0,0,0.4); border: 2px solid var(--gold-dim); border-radius: 6px; padding: 0.7rem 1rem; color: var(--gold-bright); font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; text-align: right; outline: none; transition: border-color 0.2s; }
+  .modal-input:focus { border-color: var(--gold); }
+  .modal-btns { display: flex; gap: 0.8rem; }
+  .btn { flex: 1; padding: 0.65rem; border-radius: 6px; border: none; font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; }
+  .btn-cancel { background: rgba(255,255,255,0.06); color: var(--parchment-dark); border: 1px solid rgba(255,255,255,0.15); }
+  .btn-cancel:hover { background: rgba(255,255,255,0.12); }
+  .btn-gold { background: linear-gradient(135deg, var(--gold-dim), var(--gold)); color: var(--ink); }
+  .btn-gold:hover { background: linear-gradient(135deg, var(--gold), var(--gold-bright)); }
+
+  /* ===== MAIN WRAPPER ===== */
+  .main-wrapper { max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ===== SHOP INTRO ===== */
+  .merchant-intro { text-align: center; margin-bottom: 1.5rem; }
+  .merchant-quote { font-style: italic; color: var(--parchment-dark); font-size: 1rem; opacity: 0.85; }
+  .divider { display: flex; align-items: center; gap: 1rem; margin: 0.8rem auto; max-width: 500px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); }
+  .divider-gem { color: var(--gold); font-size: 0.9rem; }
+
+  /* ===== FILTER BAR ===== */
+  .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center; }
+  .filter-label { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--parchment-dark); opacity: 0.7; margin-right: 0.3rem; }
+  .filter-btn { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.08em; padding: 0.35rem 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; color: var(--parchment-dark); cursor: pointer; transition: all 0.2s; }
+  .filter-btn:hover { border-color: var(--gold-dim); color: var(--parchment); }
+  .filter-btn.active { background: var(--gold-dim); border-color: var(--gold); color: var(--parchment); }
+
+  /* ===== SHOP GRID ===== */
+  .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+
+  /* ===== ITEM CARDS ===== */
+  .item-card {
+    background: var(--parchment);
+    border: 2px solid rgba(201,146,42,0.25);
+    border-radius: 8px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    animation: cardIn 0.4s ease both;
+  }
+  @keyframes cardIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+  .item-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 20px rgba(201,146,42,0.2); border-color: var(--gold); }
+  .item-card.out-of-stock { opacity: 0.55; }
+  .item-card.out-of-stock:hover { transform: none; }
+  .item-rarity-strip { height: 4px; width: 100%; }
+  .rarity-common { background: #999; }
+  .rarity-uncommon { background: #2d8a4e; }
+  .rarity-rare { background: #1a5fa0; }
+  .rarity-very-rare { background: #6b3aaa; }
+  .rarity-legendary { background: #c9922a; }
+  .rarity-service { background: linear-gradient(90deg, #c0364a, #7b1a2a); }
+  .rarity-tattoo { background: linear-gradient(90deg, #8b2040, #c0364a, #e0607a); }
+  .rarity-smith { background: linear-gradient(90deg, #2a3a5a, #5a8fd4, #90c4ff); }
+  .item-icon-area { padding: 1.5rem 1rem 0.8rem; text-align: center; font-size: 3.5rem; line-height: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); }
+  .item-name { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: var(--ink); text-align: center; padding: 0 1rem; line-height: 1.3; }
+  .item-rarity-label { text-align: center; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; font-family: 'Cinzel', serif; padding: 0.2rem 0; font-style: italic; }
+  .label-common { color: #777; }
+  .label-uncommon { color: #2d8a4e; }
+  .label-rare { color: #2a6fba; }
+  .label-very-rare { color: #7b3abf; }
+  .label-legendary { color: var(--gold); }
+  .label-service { color: #c0364a; }
+  .label-tattoo { color: #c0364a; }
+  .label-smith { color: #5a8fd4; }
+  .item-desc { font-size: 0.82rem; color: var(--ink-light); font-style: italic; text-align: center; padding: 0.4rem 1rem 0.8rem; line-height: 1.5; flex: 1; }
+  .item-footer { border-top: 1px solid rgba(0,0,0,0.12); padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; background: rgba(0,0,0,0.04); }
+  .item-price { display: flex; align-items: center; gap: 0.4rem; font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700; color: var(--gold-dim); }
+  .item-price .coin { font-size: 1.1rem; }
+  .item-stock { font-size: 0.7rem; color: #888; font-family: 'Cinzel', serif; letter-spacing: 0.05em; }
+  .add-to-cart-btn { background: linear-gradient(135deg, var(--wood), var(--wood-light)); border: 1px solid var(--gold-dim); border-radius: 4px; padding: 0.5rem 0.9rem; color: var(--parchment); font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .add-to-cart-btn:hover:not(:disabled) { background: linear-gradient(135deg, var(--crimson-dark), var(--crimson)); border-color: var(--crimson); transform: scale(1.04); }
+  .add-to-cart-btn.in-cart { background: linear-gradient(135deg, #1a4a20, #2a6b30); border-color: #3a8a40; }
+  .add-to-cart-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+  /* ===== TOAST ===== */
+  .toast-container { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 600; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; pointer-events: none; }
+  .toast { background: linear-gradient(135deg, #1c1008, #2a1a0e); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 0.65rem 1.2rem; color: var(--parchment); font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.6rem; box-shadow: 0 4px 20px rgba(0,0,0,0.6); animation: toastIn 0.3s ease, toastOut 0.4s ease 2.8s forwards; pointer-events: none; max-width: 340px; }
+  .toast.success { border-color: #3a8a40; }
+  .toast.error { border-color: var(--crimson); }
+  .toast-icon { font-size: 1.1rem; }
+  @keyframes toastIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes toastOut { from { opacity:1; } to { opacity:0; transform: translateY(-10px); } }
+
+  /* ===== PURCHASE LOG ===== */
+  .log-section { margin-top: 3rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(201,146,42,0.2); border-radius: 6px; padding: 1.2rem 1.5rem; }
+  .log-title { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 0.8rem; }
+  .log-list { list-style: none; }
+  .log-item { font-size: 0.82rem; color: var(--parchment-dark); padding: 0.3rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; font-style: italic; }
+  .log-amount { color: var(--crimson); font-weight: bold; font-style: normal; font-family: 'Cinzel', serif; font-size: 0.78rem; }
+  .log-empty { font-size: 0.82rem; color: #666; font-style: italic; }
+
+  .empty-shop { text-align: center; padding: 4rem 2rem; color: var(--parchment-dark); }
+  .empty-shop .icon { font-size: 4rem; margin-bottom: 1rem; }
+  .empty-shop p { font-style: italic; opacity: 0.7; }
+
+  @media (max-width: 600px) {
+    .header-inner { flex-direction: column; text-align: center; }
+    .header-right { justify-content: center; }
+    :root { --cart-width: 100vw; }
+    .toast-container { left: 1rem; right: 1rem; bottom: 1rem; transform: none; }
+    .toast { max-width: 100%; }
+    .tab-btn { padding: 0.8rem 0.8rem; font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="shop-header">
+  <div class="header-inner">
+    <div class="shop-title-block">
+      <div class="shop-title">⚜ The Beacon ⚜</div>
+      <div class="shop-subtitle">Purveyor of Rare &amp; Wondrous Goods</div>
+    </div>
+    <div class="header-right">
+      <div class="balance-panel">
+        <span class="balance-label">Purse</span>
+        <div class="coin-display">
+          <span class="coin-icon">💰</span>
+          <span class="balance-value" id="balanceDisplay">0</span>
+          <span class="balance-label">gp</span>
+        </div>
+        <button class="balance-edit-btn" onclick="openBalanceModal()">✎ Edit</button>
+      </div>
+      <button class="cart-btn" id="cartBtn" onclick="openCart()">
+        🛒 Satchel
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="magic" onclick="switchTab('magic',this)">✨ Magic Shop</button>
+  <button class="tab-btn" data-tab="general" onclick="switchTab('general',this)">🏪 General Store</button>
+  <button class="tab-btn" data-tab="tattoo" onclick="switchTab('tattoo',this)">🩸 Tattoo Parlour</button>
+  <button class="tab-btn" data-tab="smith" onclick="switchTab('smith',this)">🔨 Blacksmith</button>
+</nav>
+
+<!-- BALANCE MODAL -->
+<div class="modal-overlay" id="balanceModal">
+  <div class="modal-box">
+    <div class="modal-title">Set Your Purse</div>
+    <div class="modal-sub">How many gold pieces do you carry, adventurer?</div>
+    <div class="modal-input-row">
+      <span class="modal-coin">💰</span>
+      <input class="modal-input" type="number" id="balanceInput" min="0" placeholder="0" />
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-cancel" onclick="closeBalanceModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="setBalance()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <div class="cart-title">🎒 Your Satchel</div>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="empty-icon">🎒</div>
+      <p>Your satchel is empty.<br>Browse the shop and add items!</p>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-summary">
+      <div class="cart-summary-row">
+        <span class="slabel">Items in Satchel</span>
+        <span class="sval" id="cartItemCount">0</span>
+      </div>
+      <div class="cart-summary-row total">
+        <span class="slabel">Total Cost</span>
+        <span class="sval">💰 <span id="cartTotal">0</span> gp</span>
+      </div>
+    </div>
+    <div class="affordability-bar">
+      <div class="affordability-fill" id="affordFill" style="width:0%;background:#444;"></div>
+    </div>
+    <div class="affordability-msg" id="affordMsg" style="color:#6b4a30;">Add items to begin</div>
+    <button class="checkout-btn" id="checkoutBtn" onclick="checkout()" disabled>⚔ Complete Purchase</button>
+    <button class="clear-cart-btn" onclick="clearCart()">✕ Clear Satchel</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main-wrapper">
+
+  <!-- MAGIC SHOP TAB -->
+  <div class="tab-panel active" id="panel-magic">
+    <div class="merchant-intro">
+      <div class="merchant-quote">"✨ Welcome. I am Gabriella — purveyor of the arcane, and artist of the eternal mark. Browse freely, but touch nothing without coin."</div>
+      <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
+    </div>
+    <div class="filter-bar" id="filterBar-magic">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="setFilter('magic','all',this)">All</button>
+    </div>
+    <div class="shop-grid" id="shopGrid-magic"></div>
+  </div>
+
+  <!-- GENERAL STORE TAB -->
+  <div class="tab-panel" id="panel-general">
+    <div class="merchant-intro">
+      <div class="merchant-quote">"🏪 Honest goods at honest prices. No sorcery here — just solid craftsmanship."</div>
+      <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
+    </div>
+    <div class="filter-bar" id="filterBar-general">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="setFilter('general','all',this)">All</button>
+    </div>
+    <div class="shop-grid" id="shopGrid-general"></div>
+  </div>
+
+  <!-- TATTOO PARLOUR TAB -->
+  <div class="tab-panel" id="panel-tattoo">
+    <div class="merchant-intro">
+      <div class="merchant-quote">"🩸 Back already? Good. The magic shop is mine, and so is this parlour. Sit — Gabriella will find the right mark for you."</div>
+      <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
+    </div>
+    <div class="filter-bar" id="filterBar-tattoo">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="setFilter('tattoo','all',this)">All</button>
+    </div>
+    <div class="shop-grid" id="shopGrid-tattoo"></div>
+  </div>
+
+  <!-- BLACKSMITH TAB -->
+  <div class="tab-panel" id="panel-smith">
+    <div class="merchant-intro">
+      <div class="merchant-quote">"🔨 Forged in fire, tested in blood. If it breaks, come back and I'll make it right."</div>
+      <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
+    </div>
+    <div class="filter-bar" id="filterBar-smith">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="setFilter('smith','all',this)">All</button>
+    </div>
+    <div class="shop-grid" id="shopGrid-smith"></div>
+  </div>
+
+  <div class="log-section">
+    <div class="log-title">📜 Purchase Ledger</div>
+    <ul class="log-list" id="purchaseLog">
+      <li class="log-empty">No purchases yet...</li>
+    </ul>
+  </div>
+</main>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // ============================================================
+  //  STATE
+  // ============================================================
+  let balance = 0;
+  const activeFilters = { magic: 'all', general: 'all', tattoo: 'all', smith: 'all' };
+  let activeTab = 'magic';
+  const cart = {};
+  const purchaseHistory = [];
+
+  // ============================================================
+  //  ITEMS DATA
+  // ============================================================
+  const shopItems = {
+
+    magic: [
+      { id:101, name:"Potion of Healing", icon:"🧪", desc:"A bright crimson vial. Restores 2d4+2 hit points. Bonus Action to drink.", price:50, rarity:"common", category:"🧪 Potions", stock:Infinity, link:"http://dnd2024.wikidot.com/magic-item:potion-of-healing" },
+      { id:102, name:"Potion of Greater Healing", icon:"❤️", desc:"Heals 4d4+4 hit points. Deeper crimson than the common variety. Bonus Action to drink.", price:200, rarity:"uncommon", category:"🧪 Potions", stock:2, link:"http://dnd2024.wikidot.com/magic-item:potion-of-healing" },
+      { id:103, name:"+1 Longsword", icon:"⚔️", desc:"A well-balanced blade enchanted for accuracy. +1 to attack and damage rolls. No attunement needed.", price:300, rarity:"uncommon", category:"⚔️ Weapons", stock:1, link:"http://dnd2024.wikidot.com/magic-item:weapon-1-2-or-3" },
+      { id:104, name:"Cloak of Protection", icon:"🧣", desc:"Woven with subtle runes. Requires attunement. +1 to AC and all saving throws.", price:800, rarity:"uncommon", category:"🛡️ Armour", stock:1, link:"http://dnd2024.wikidot.com/magic-item:cloak-of-protection" },
+      { id:105, name:"Bag of Holding", icon:"👜", desc:"Holds up to 500 lbs within 64 cubic feet. Interior far larger than it appears. <em style='color:#8a6015;font-size:0.78em;'>✦ Gabriella smirks: &ldquo;Solve my little riddle and it&rsquo;s yours for free, clever one...&rdquo;</em>", price:500, rarity:"uncommon", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:bag-of-holding", puzzle:true },
+      { id:106, name:"Wand of Magic Missiles", icon:"✨", desc:"7 charges. Expend up to 3 charges to cast Magic Missile. Regains 1d6+1 charges at dawn.", price:500, rarity:"uncommon", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:wand-of-magic-missiles" },
+      { id:107, name:"Ring of Protection", icon:"💍", desc:"Requires attunement. +1 bonus to AC and all saving throws while worn.", price:1000, rarity:"rare", category:"💍 Rings", stock:1, link:"http://dnd2024.wikidot.com/magic-item:ring-of-protection" },
+      { id:108, name:"Pearl of Power", icon:"🔮", desc:"Requires attunement by a spellcaster. Once per day as a Magic action, regain one expended spell slot of 3rd level or lower.", price:2000, rarity:"uncommon", category:"✨ Wondrous", stock:2, link:"http://dnd2024.wikidot.com/magic-item:pearl-of-power" },
+      { id:109, name:"Boots of Speed", icon:"👢", desc:"Requires attunement. Bonus Action: double your walking speed, and opportunity attacks against you have disadvantage. Lasts 10 minutes (1/day).", price:4000, rarity:"rare", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:boots-of-speed" },
+      { id:110, name:"Necklace of Fireballs", icon:"🔥", desc:"1d6+3 beads remaining. Hurl a bead up to 60 ft — it detonates as a Fireball (DC 15, 5d6 fire per bead spent). Each bead adds to the explosion.", price:3000, rarity:"rare", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:necklace-of-fireballs" },
+      { id:111, name:"Robe of Eyes", icon:"👁️", desc:"Requires attunement. See in all directions, darkvision 120 ft, see invisible and ethereal creatures. Cannot be blinded. Light sensitivity: daylight spells blind you for 1 min.", price:8000, rarity:"rare", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:robe-of-eyes" },
+    ],
+
+    general: [
+      { id:201, name:"Torch (×5)", icon:"🔦", desc:"Five sturdy torches. Each burns for 1 hour, casting Bright Light 20 ft and Dim Light 20 ft beyond.", price:1, rarity:"common", category:"🔦 Light", stock:Infinity, link:null },
+      { id:202, name:"Rope, Hempen (50 ft)", icon:"🪢", desc:"2 hit points. Can be burst with a DC 17 Strength check. A staple of any adventurer's pack.", price:1, rarity:"common", category:"🎒 Gear", stock:Infinity, link:null },
+      { id:203, name:"Rations (1 day)", icon:"🍖", desc:"Dried meat, hardtack and dried fruit. One day's food for one person. Doesn't spoil for weeks.", price:1, rarity:"common", category:"🍖 Food", stock:Infinity, link:null },
+      { id:204, name:"Thieves' Tools", icon:"🗝️", desc:"Lockpicks, file, mirror, scissors, pliers. Proficiency required for picking locks and disarming traps.", price:25, rarity:"common", category:"🎒 Gear", stock:2, link:null },
+      { id:205, name:"Healer's Kit", icon:"🩹", desc:"10 uses. As an action, stabilise a creature at 0 hp without a Medicine check.", price:5, rarity:"common", category:"🎒 Gear", stock:3, link:null },
+      { id:206, name:"Crowbar", icon:"🪛", desc:"Grants advantage on Strength checks where leverage can be applied.", price:2, rarity:"common", category:"🎒 Gear", stock:Infinity, link:null },
+      { id:207, name:"Lantern, Bullseye", icon:"🏮", desc:"Casts bright light in a 60-ft cone, dim light for another 60 ft. Burns 6 hours per flask of oil.", price:10, rarity:"common", category:"🔦 Light", stock:3, link:null },
+      { id:208, name:"Flask of Oil", icon:"🪔", desc:"Fuel for lanterns. Can also be used as a thrown weapon — 1d4 fire damage on a lit surface.", price:1, rarity:"common", category:"🔦 Light", stock:Infinity, link:null },
+      { id:209, name:"Antitoxin", icon:"💚", desc:"Bonus Action to drink. Advantage on Constitution saves against poison for 1 hour.", price:50, rarity:"common", category:"💊 Medicine", stock:3, link:null },
+      { id:210, name:"Backpack", icon:"🎒", desc:"Carries up to 30 lbs of gear. Standard adventurer's pack.", price:2, rarity:"common", category:"🎒 Gear", stock:Infinity, link:null },
+      { id:211, name:"Climber's Kit", icon:"🧗", desc:"Pitons, boot tips, gloves, harness. When you use it to climb, you can't fall more than 25 ft.", price:25, rarity:"common", category:"🎒 Gear", stock:2, link:null },
+      { id:212, name:"Spyglass", icon:"🔭", desc:"Objects viewed through a spyglass are magnified to twice their size.", price:1000, rarity:"common", category:"🎒 Gear", stock:1, link:null },
+    ],
+
+    tattoo: [
+      { id:301, name:"Absorbing Tattoo — Acid", icon:"🐉", desc:"Requires attunement. Resistance to Acid damage. Once per day, when you take Acid damage, you can use your reaction to absorb it, gaining 1d10 temporary hit points.", price:3000, rarity:"very-rare", category:"🛡 Absorption", stock:1, link:"https://dnd5e.wikidot.com/wondrous-items:absorbing-tattoo" },
+      { id:302, name:"Absorbing Tattoo — Fire", icon:"🔥", desc:"Requires attunement. Resistance to Fire damage. Once per day, absorb Fire damage as temporary hit points.", price:3000, rarity:"very-rare", category:"🛡 Absorption", stock:1, link:"https://dnd5e.wikidot.com/wondrous-items:absorbing-tattoo" },
+      { id:303, name:"Absorbing Tattoo — Lightning", icon:"⚡", desc:"Requires attunement. Resistance to Lightning damage. Once per day, absorb Lightning damage as temporary hit points.", price:3000, rarity:"very-rare", category:"🛡 Absorption", stock:1, link:"https://dnd5e.wikidot.com/wondrous-items:absorbing-tattoo" },
+      { id:304, name:"Absorbing Tattoo — Necrotic", icon:"💀", desc:"Requires attunement. Resistance to Necrotic damage. Once per day, absorb Necrotic damage as temporary hit points.", price:3000, rarity:"very-rare", category:"🛡 Absorption", stock:1, link:"https://dnd5e.wikidot.com/wondrous-items:absorbing-tattoo" },
+      { id:305, name:"Coiling Grasp Tattoo", icon:"🐍", desc:"Requires attunement. Ink tendrils lash out. Bonus Action: spectral tendrils grapple a creature within 15 ft (Str DC 14 to escape). 10 temp hp once per day.", price:2000, rarity:"uncommon", category:"⚔ Combat", stock:2, link:"https://dnd5e.wikidot.com/wondrous-items:coiling-grasp-tattoo" },
+      { id:306, name:"Eldritch Claw Tattoo", icon:"🦾", desc:"Requires attunement. Unarmed strikes count as magical. Bonus action: 15-ft reach on unarmed strikes for 1 minute (1/day).", price:2500, rarity:"uncommon", category:"⚔ Combat", stock:2, link:"https://dnd5e.wikidot.com/wondrous-items:eldritch-claw-tattoo" },
+      { id:307, name:"Ghost Step Tattoo", icon:"👻", desc:"Requires attunement. Bonus action: pass through solid objects for 1 turn (1/day). If you end your turn inside an object, 1d10 force damage.", price:4000, rarity:"very-rare", category:"💨 Movement", stock:1, link:"https://dnd5e.wikidot.com/wondrous-items:ghost-step-tattoo" },
+      { id:308, name:"Illuminator's Tattoo", icon:"✒️", desc:"Requires attunement. Produce messages of light on surfaces as a Magic action. Unlimited use. A favourite of spies and scholars.", price:300, rarity:"common", category:"🔧 Utility", stock:3, link:"https://dnd5e.wikidot.com/wondrous-items:illuminators-tattoo" },
+      { id:309, name:"Masquerade Tattoo", icon:"🎭", desc:"Requires attunement. Cast Disguise Self at will. Tattoo appears as whatever the disguise depicts while active.", price:1000, rarity:"uncommon", category:"🔧 Utility", stock:1, link:"https://dnd5e.wikidot.com/wondrous-items:masquerade-tattoo" },
+      { id:310, name:"Shadowfell Brand Tattoo", icon:"🌑", desc:"Requires attunement. Resistance to Necrotic damage. Shadow magic: Misty Step (shadow-form) 1/day, cast in darkness without components.", price:5000, rarity:"rare", category:"🌑 Shadow", stock:1, link:"https://dnd5e.wikidot.com/wondrous-items:shadowfell-brand-tattoo" },
+    ],
+
+    smith: [
+      { id:401, name:"Shortsword", icon:"🗡️", desc:"1d6 piercing. Finesse, light. The most reliable sidearm in the realm.", price:10, rarity:"common", category:"🗡️ Blades", stock:Infinity, link:null },
+      { id:402, name:"Longsword", icon:"⚔️", desc:"1d8 slashing (1d10 versatile). The standard weapon of knights and soldiers.", price:15, rarity:"common", category:"🗡️ Blades", stock:Infinity, link:null },
+      { id:403, name:"Greataxe", icon:"🪓", desc:"1d12 slashing. Two-handed, heavy. Preferred by warriors who favour raw power over finesse.", price:30, rarity:"common", category:"🪓 Heavy", stock:3, link:null },
+      { id:404, name:"Hand Crossbow", icon:"🏹", desc:"1d6 piercing. Light, range 30/120 ft. Requires free hand to reload.", price:75, rarity:"common", category:"🏹 Ranged", stock:2, link:null },
+      { id:405, name:"Chain Mail", icon:"🛡️", desc:"AC 16. Disadvantage on Stealth. Strength 13 required. Standard heavy armour.", price:75, rarity:"common", category:"🛡️ Armour", stock:2, link:null },
+      { id:406, name:"Plate Armour", icon:"🛡", desc:"AC 18. Disadvantage on Stealth. Strength 15 required. The finest mundane protection available.", price:1500, rarity:"common", category:"🛡️ Armour", stock:1, link:null },
+      { id:407, name:"Shield", icon:"🛡", desc:"+2 to AC. Requires one hand free. Can be used as an improvised weapon (1d4 bludgeoning).", price:10, rarity:"common", category:"🛡️ Armour", stock:Infinity, link:null },
+      { id:408, name:"Silvered Longsword", icon:"🌙", desc:"A longsword coated in silver. Bypasses resistance and immunity to non-magical/non-silvered weapons for certain monsters.", price:115, rarity:"common", category:"🗡️ Blades", stock:2, link:null },
+      { id:410, name:"Mithral Armour", icon:"💎", desc:"Any medium or heavy armour. No Strength requirement, no Stealth disadvantage. Lightweight miracle of dwarven craft.", price:400, rarity:"uncommon", category:"🛡️ Armour", stock:1, link:"http://dnd2024.wikidot.com/magic-item:mithral-armor" },
+      { id:411, name:"Custom Commission", icon:"🔨", desc:"Bring materials and a design. Aldric's smith will craft to your specifications. Price ranges from 50 to 1,000 gp depending on complexity, materials, and time required — this books a consultation to discuss the work.", price:50, rarity:"service", category:"🔨 Service", stock:Infinity, link:null },
+    ]
+  };
+
+  // ============================================================
+  //  TAB SWITCHING
+  // ============================================================
+  function switchTab(tab, btn) {
+    activeTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+  }
+
+  // ============================================================
+  //  BALANCE
+  // ============================================================
+  function openBalanceModal() {
+    document.getElementById('balanceInput').value = balance;
+    document.getElementById('balanceModal').classList.add('open');
+    setTimeout(() => document.getElementById('balanceInput').focus(), 50);
+  }
+  function closeBalanceModal() { document.getElementById('balanceModal').classList.remove('open'); }
+  function setBalance() {
+    const val = parseInt(document.getElementById('balanceInput').value) || 0;
+    if (val < 0) { showToast('⚠️', "Balance cannot be negative!", 'error'); return; }
+    balance = val;
+    updateBalanceDisplay();
+    closeBalanceModal();
+    renderAllGrids();
+    updateCartFooter();
+    showToast('💰', `Purse set to ${balance.toLocaleString()} gp`, 'success');
+  }
+  function updateBalanceDisplay() { document.getElementById('balanceDisplay').textContent = balance.toLocaleString(); }
+  document.getElementById('balanceModal').addEventListener('click', e => { if (e.target.id === 'balanceModal') closeBalanceModal(); });
+  document.getElementById('balanceInput').addEventListener('keydown', e => { if (e.key === 'Enter') setBalance(); if (e.key === 'Escape') closeBalanceModal(); });
+
+  // ============================================================
+  //  CART
+  // ============================================================
+  function openCart() {
+    document.getElementById('cartDrawer').classList.add('open');
+    document.getElementById('cartOverlay').classList.add('open');
+  }
+  function closeCart() {
+    document.getElementById('cartDrawer').classList.remove('open');
+    document.getElementById('cartOverlay').classList.remove('open');
+  }
+  function getAllItems() { return [...shopItems.magic, ...shopItems.general, ...shopItems.tattoo, ...shopItems.smith]; }
+  function cartTotal() {
+    return Object.entries(cart).reduce((sum, [id, qty]) => {
+      const item = getAllItems().find(i => i.id === +id);
+      return sum + (item ? item.price * qty : 0);
+    }, 0);
+  }
+  function cartItemCount() { return Object.values(cart).reduce((a,b) => a+b, 0); }
+
+  function addToCart(id) {
+    const item = getAllItems().find(i => i.id === id);
+    if (!item || item.stock === 0) return;
+    const curQty = cart[id] || 0;
+    const maxQty = item.stock === Infinity ? 99 : item.stock;
+    if (curQty >= maxQty) { showToast('⚠️', `Only ${maxQty} in stock!`, 'error'); return; }
+    cart[id] = curQty + 1;
+    updateCartUI();
+    renderAllGrids();
+    showToast('🛒', `${item.name} added to satchel`, 'success');
+    bumpBadge();
+  }
+  function decreaseCart(id) {
+    if (!cart[id]) return;
+    cart[id]--;
+    if (cart[id] <= 0) delete cart[id];
+    updateCartUI(); renderAllGrids();
+  }
+  function removeFromCart(id) { delete cart[id]; updateCartUI(); renderAllGrids(); }
+  function clearCart() { Object.keys(cart).forEach(k => delete cart[k]); updateCartUI(); renderAllGrids(); }
+  function bumpBadge() {
+    const badge = document.getElementById('cartBadge');
+    badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
+  }
+  function updateCartUI() {
+    document.getElementById('cartBadge').textContent = cartItemCount();
+    renderCartItems();
+    updateCartFooter();
+  }
+  function renderCartItems() {
+    const container = document.getElementById('cartItems');
+    const ids = Object.keys(cart).map(Number);
+    if (ids.length === 0) {
+      container.innerHTML = `<div class="cart-empty"><div class="empty-icon">🎒</div><p>Your satchel is empty.<br>Browse the shop and add items!</p></div>`;
+      return;
+    }
+    container.innerHTML = '';
+    ids.forEach(id => {
+      const item = getAllItems().find(i => i.id === id);
+      if (!item) return;
+      const qty = cart[id];
+      const maxQty = item.stock === Infinity ? 99 : item.stock;
+      const lineTotal = item.price * qty;
+      const row = document.createElement('div');
+      row.className = 'cart-item';
+      row.innerHTML = `
+        <div class="cart-item-icon">${item.icon}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-unit">💰 ${item.price.toLocaleString()} gp each</div>
+        </div>
+        <div class="cart-qty-controls">
+          <button class="qty-btn danger" onclick="decreaseCart(${id})">−</button>
+          <span class="qty-value">${qty}</span>
+          <button class="qty-btn" onclick="addToCart(${id})" ${qty >= maxQty ? 'disabled' : ''}>+</button>
+        </div>
+        <div class="cart-item-total">💰 ${lineTotal.toLocaleString()}</div>
+        <button class="qty-btn danger" onclick="removeFromCart(${id})" style="font-size:0.65rem;margin-left:2px;">✕</button>
+      `;
+      container.appendChild(row);
+    });
+  }
+  function updateCartFooter() {
+    const total = cartTotal();
+    const count = cartItemCount();
+    document.getElementById('cartItemCount').textContent = count;
+    document.getElementById('cartTotal').textContent = total.toLocaleString();
+    const fill = document.getElementById('affordFill');
+    const msg = document.getElementById('affordMsg');
+    const btn = document.getElementById('checkoutBtn');
+    if (count === 0) { fill.style.width='0%'; fill.style.background='#444'; msg.textContent='Add items to begin'; msg.style.color='#6b4a30'; btn.disabled=true; return; }
+    if (balance === 0) { fill.style.width='20%'; fill.style.background='#8a6015'; msg.textContent='⚠ Set your purse first!'; msg.style.color='var(--gold)'; btn.disabled=true; return; }
+    const ratio = Math.min(total / balance, 1);
+    fill.style.width = Math.round(ratio * 100) + '%';
+    if (total <= balance) {
+      fill.style.background='#2d8a4e';
+      msg.textContent=`✓ Affordable! ${(balance-total).toLocaleString()} gp remaining`;
+      msg.style.color='#4eba70'; btn.disabled=false;
+    } else {
+      fill.style.background='#8b1a1a';
+      msg.textContent=`✗ Short by ${(total-balance).toLocaleString()} gp`;
+      msg.style.color='#cc4444'; btn.disabled=true;
+    }
+  }
+
+  // ============================================================
+  //  CHECKOUT
+  // ============================================================
+  function checkout() {
+    const total = cartTotal();
+    if (total > balance) { showToast('❌', 'Not enough gold!', 'error'); return; }
+    Object.entries(cart).forEach(([id, qty]) => {
+      const item = getAllItems().find(i => i.id === +id);
+      if (!item) return;
+      if (item.stock !== Infinity) item.stock -= qty;
+      addToLog(item, qty);
+    });
+    balance -= total;
+    updateBalanceDisplay();
+    Object.keys(cart).forEach(k => delete cart[k]);
+    updateCartUI(); renderAllGrids(); closeCart();
+    showToast('✅', `Purchase complete! −${total.toLocaleString()} gp`, 'success');
+  }
+
+  // ============================================================
+  //  PURCHASE LOG
+  // ============================================================
+  function addToLog(item, qty) {
+    const cost = item.price * qty;
+    const log = document.getElementById('purchaseLog');
+    if (!purchaseHistory.length) log.innerHTML = '';
+    purchaseHistory.unshift({ name: item.name, cost, qty });
+    const li = document.createElement('li');
+    li.className = 'log-item';
+    li.innerHTML = `<span>${item.icon} ${item.name}${qty > 1 ? ` ×${qty}` : ''}</span><span class="log-amount">−${cost.toLocaleString()} gp</span>`;
+    log.prepend(li);
+  }
+
+  // ============================================================
+  //  FILTERS
+  // ============================================================
+  function buildFilters(tab) {
+    const bar = document.getElementById('filterBar-' + tab);
+    [...new Set(shopItems[tab].map(i => i.category))].forEach(cat => {
+      if (bar.querySelector(`[data-cat="${cat}"]`)) return;
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn'; btn.textContent = cat; btn.dataset.cat = cat;
+      btn.onclick = () => setFilter(tab, cat, btn);
+      bar.appendChild(btn);
+    });
+  }
+  function setFilter(tab, cat, btn) {
+    activeFilters[tab] = cat;
+    document.querySelectorAll(`#filterBar-${tab} .filter-btn`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid(tab);
+  }
+
+  // ============================================================
+  //  RENDER CARDS
+  // ============================================================
+  function renderGrid(tab) {
+    const grid = document.getElementById('shopGrid-' + tab);
+    grid.innerHTML = '';
+    const filter = activeFilters[tab];
+    const filtered = filter === 'all' ? shopItems[tab] : shopItems[tab].filter(i => i.category === filter);
+    if (!filtered.length) { grid.innerHTML = '<div class="empty-shop"><div class="icon">🚪</div><p>No goods of that kind today...</p></div>'; return; }
+    filtered.forEach((item, idx) => {
+      const outOfStock = item.stock === 0;
+      const cartQty = cart[item.id] || 0;
+      const maxQty = item.stock === Infinity ? 99 : item.stock;
+      const atMax = cartQty >= maxQty;
+      const inCart = cartQty > 0;
+      const raritySlug = item.rarity.replace(/\s+/g,'-');
+      const stockLabel = item.stock === Infinity ? 'In Stock' : item.stock === 0 ? 'Sold Out' : `${Math.max(0, item.stock - cartQty)} left`;
+      const nameHtml = item.link
+        ? `<a href="${item.link}" target="_blank" style="color:inherit;text-decoration:underline dotted;font-family:'Cinzel',serif;">${item.name}</a>`
+        : item.name;
+      const card = document.createElement('div');
+      card.className = 'item-card' + (outOfStock ? ' out-of-stock' : '');
+      card.style.animationDelay = `${idx * 0.06}s`;
+      card.innerHTML = `
+        <div class="item-rarity-strip rarity-${raritySlug}"></div>
+        <div class="item-icon-area">${item.icon}</div>
+        <div class="item-name">${nameHtml}</div>
+        <div class="item-rarity-label label-${raritySlug}">${item.rarity.replace(/-/g,' ')}</div>
+        <div class="item-desc">${item.desc}</div>
+        <div class="item-footer">
+          <div>
+            <div class="item-price"><span class="coin">💰</span>${item.price === 0 ? '<span style="color:#2d8a4e;font-weight:700;">FREE!</span>' : item.price.toLocaleString() + ' gp'}</div>
+            <div class="item-stock">${cartQty > 0 ? `${cartQty} in satchel · ` : ''}${stockLabel}</div>
+          </div>
+          <div style="display:flex;gap:4px;align-items:center;">
+            ${item.puzzle && !outOfStock && item.price > 0 ? '<button class="add-to-cart-btn" onclick="openPuzzle()" style="background:linear-gradient(135deg,#4a2080,#7b3abf);border-color:#9b5adf;" title="Solve the puzzle to get this free!">🔮 Inspect</button>' : ''}
+            <button class="add-to-cart-btn ${inCart ? 'in-cart' : ''}" onclick="addToCart(${item.id})" ${outOfStock || atMax ? 'disabled' : ''}>
+              ${outOfStock ? 'Sold Out' : atMax ? '✓ Max' : inCart ? '+ More' : '+ Add'}
+            </button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+  function renderAllGrids() { ['magic','general','tattoo','smith'].forEach(renderGrid); }
+
+  // ============================================================
+  //  TOAST
+  // ============================================================
+  function showToast(icon, msg, type = '') {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+    document.getElementById('toastContainer').appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+
+  // ============================================================
+  //  INIT
+  // ============================================================
+  ['magic','general','tattoo','smith'].forEach(tab => { buildFilters(tab); renderGrid(tab); });
+  updateCartFooter();
+</script>
+
+<!-- PUZZLE MODAL -->
+<style>
+  #puzzleOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  #puzzleOverlay.open {
+    display: flex !important;
+  }
+</style>
+<div id="puzzleOverlay" onclick="handleOverlayClick(event)">
+  <div id="puzzleBox" style="background:linear-gradient(180deg,#2a1a0e,#1c1008);border:2px solid #c9922a;border-radius:10px;max-width:480px;width:100%;padding:2rem;box-shadow:0 0 60px rgba(201,146,42,0.3);position:relative;max-height:85vh;overflow-y:auto;">
+    <button onclick="closePuzzle()" style="position:absolute;top:0.8rem;right:0.8rem;background:none;border:1px solid rgba(255,255,255,0.2);color:#e8d49a;width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:0.85rem;">✕</button>
+    <div style="text-align:center;margin-bottom:1.2rem;">
+      <div style="font-size:2.5rem;margin-bottom:0.5rem;">👜</div>
+      <div style="font-family:'Cinzel Decorative',cursive;color:#f0b840;font-size:1rem;text-shadow:0 0 10px rgba(240,184,64,0.5);">Gabriella's Challenge</div>
+      <div style="font-family:'Cinzel',serif;font-size:0.7rem;color:#8a6015;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px;">Speak the answer — claim the bag</div>
+    </div>
+
+    <!-- STAGE 1: RIDDLE -->
+    <div id="stage1">
+      <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(201,146,42,0.3);border-radius:6px;padding:1.2rem;margin-bottom:1rem;">
+        <p style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.95rem;line-height:1.7;text-align:center;margin:0;">
+          "I have no mouth yet I speak,<br>
+          no hands yet I reach,<br>
+          I hold everything you bring me<br>
+          yet I possess nothing at all.<br>
+          What am I?"
+        </p>
+      </div>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem;">
+        <button class="puzzle-choice" onclick="checkRiddle(this,'wrong')" data-answer="a shadow">A Shadow</button>
+        <button class="puzzle-choice" onclick="checkRiddle(this,'wrong')" data-answer="the wind">The Wind</button>
+        <button class="puzzle-choice" onclick="checkRiddle(this,'correct')" data-answer="a bag">A Bag</button>
+        <button class="puzzle-choice" onclick="checkRiddle(this,'wrong')" data-answer="an echo">An Echo</button>
+      </div>
+      <div id="riddleMsg" style="text-align:center;font-family:'Cinzel',serif;font-size:0.78rem;min-height:1.2rem;"></div>
+    </div>
+
+    <!-- STAGE 2: LOCK PUZZLE -->
+    <div id="stage2" style="display:none;">
+      <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(201,146,42,0.3);border-radius:6px;padding:1rem;margin-bottom:1rem;text-align:center;">
+        <div style="font-family:'Cinzel',serif;font-size:0.75rem;color:#8a6015;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem;">Arcane Combination Lock</div>
+        <div style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.85rem;line-height:1.6;margin-bottom:0.8rem;">
+          "A wizard had 3 bags. The first held twice what the second held. The second held 10 gp more than the third. Together they held 110 gp. How many gold pieces were in the third bag?"
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;">
+          <input id="lockInput" type="number" min="0" max="999" placeholder="?" style="width:80px;text-align:center;font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;background:rgba(0,0,0,0.5);border:2px solid #8a6015;border-radius:4px;color:#f0b840;padding:0.4rem;" onkeydown="if(event.key==='Enter')checkLock()"/>
+          <span style="color:#c9922a;font-family:'Cinzel',serif;font-size:0.8rem;">gp</span>
+          <button onclick="checkLock()" style="background:linear-gradient(135deg,#5a0f0f,#8b1a1a);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:0.4rem 0.8rem;color:#f4e4bc;font-family:'Cinzel',serif;font-size:0.75rem;cursor:pointer;">Unlock</button>
+        </div>
+        <div id="lockMsg" style="text-align:center;font-family:'Cinzel',serif;font-size:0.78rem;min-height:1.2rem;margin-top:0.5rem;"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 3: SLIDING SIGIL PUZZLE -->
+    <div id="stage3" style="display:none;">
+      <div style="text-align:center;margin-bottom:0.8rem;">
+        <div style="font-family:'Cinzel',serif;font-size:0.75rem;color:#8a6015;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Final Seal — Arrange the Sigils</div>
+        <div style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.82rem;">Order the runes from weakest to most powerful magic</div>
+      </div>
+      <div id="sigilGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:280px;margin:0 auto 0.8rem;"></div>
+      <div style="text-align:center;font-family:'Cinzel',serif;font-size:0.72rem;color:#6b4a30;margin-bottom:0.6rem;">Click sigils in order: Cantrip → Spell → Ritual → Archmage</div>
+      <div id="sigilProgress" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.6rem;">
+        <span id="sp0" style="width:20px;height:20px;border-radius:50%;border:1px solid #6b4a30;background:transparent;display:inline-block;"></span>
+        <span id="sp1" style="width:20px;height:20px;border-radius:50%;border:1px solid #6b4a30;background:transparent;display:inline-block;"></span>
+        <span id="sp2" style="width:20px;height:20px;border-radius:50%;border:1px solid #6b4a30;background:transparent;display:inline-block;"></span>
+        <span id="sp3" style="width:20px;height:20px;border-radius:50%;border:1px solid #6b4a30;background:transparent;display:inline-block;"></span>
+      </div>
+      <div id="sigilMsg" style="text-align:center;font-family:'Cinzel',serif;font-size:0.78rem;min-height:1.2rem;"></div>
+    </div>
+
+    <!-- STAGE 4: SUCCESS -->
+    <div id="stage4" style="display:none;text-align:center;">
+      <div style="font-size:3rem;margin-bottom:0.8rem;animation:pulse 1s ease infinite alternate;">✨</div>
+      <div style="font-family:'Cinzel Decorative',cursive;color:#f0b840;font-size:1.1rem;margin-bottom:0.5rem;">The Bag is Yours!</div>
+      <div style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.88rem;line-height:1.6;margin-bottom:1.2rem;">"Hah! Three seals, and you cracked them all. I knew I liked you. Take the bag — consider it a gift from Gabriella."</div>
+      <button onclick="claimBag()" style="background:linear-gradient(135deg,#1a4a20,#2a6b30);border:2px solid rgba(255,255,255,0.2);border-radius:6px;padding:0.7rem 2rem;color:#e0ffe0;font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:0.08em;">⚔ Claim the Bag — FREE</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .puzzle-choice {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(201,146,42,0.3);
+    border-radius: 4px;
+    padding: 0.5rem 0.9rem;
+    color: #e8d49a;
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .puzzle-choice:hover:not(:disabled) { background: rgba(201,146,42,0.15); border-color: #c9922a; }
+  .puzzle-choice:disabled { opacity: 0.4; cursor: not-allowed; }
+  .puzzle-choice.correct { background: rgba(45,138,78,0.3); border-color: #3a8a40; color: #a0e0a0; }
+  .puzzle-choice.wrong { background: rgba(139,26,26,0.3); border-color: #8b1a1a; color: #e08080; }
+  @keyframes pulse { from { opacity:0.7; transform:scale(1); } to { opacity:1; transform:scale(1.1); } }
+  .sigil-btn {
+    aspect-ratio: 1;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(201,146,42,0.25);
+    border-radius: 6px;
+    color: #e8d49a;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px;
+  }
+  .sigil-btn:hover:not(:disabled):not(.used) { border-color: #c9922a; background: rgba(201,146,42,0.1); transform: scale(1.05); }
+  .sigil-btn.used { opacity: 0.3; cursor: not-allowed; }
+  .sigil-btn .slabel { font-family: 'Cinzel', serif; font-size: 0.45rem; letter-spacing: 0.05em; text-transform: uppercase; color: #8a6015; line-height: 1; }
+</style>
+
+<script>
+  var puzzleSigilOrder = [];
+  var sigils = [
+    { icon: "🕯️", label: "Cantrip",  rank: 0 },
+    { icon: "⚡",  label: "Spell",    rank: 1 },
+    { icon: "📜", label: "Ritual",   rank: 2 },
+    { icon: "🔮", label: "Archmage", rank: 3 }
+  ];
+  var shuffledSigils = [];
+
+  function openPuzzle() {
+    puzzleSigilOrder = [];
+    document.getElementById("puzzleOverlay").classList.add("open");
+    document.getElementById("stage1").style.display = "block";
+    document.getElementById("stage2").style.display = "none";
+    document.getElementById("stage3").style.display = "none";
+    document.getElementById("stage4").style.display = "none";
+    document.getElementById("riddleMsg").textContent = "";
+    document.getElementById("lockMsg").textContent = "";
+    document.getElementById("sigilMsg").textContent = "";
+    document.getElementById("lockInput").value = "";
+    document.querySelectorAll(".puzzle-choice").forEach(function(b) {
+      b.disabled = false; b.className = "puzzle-choice";
+    });
+    for(var i = 0; i < 4; i++) {
+      document.getElementById("sp" + i).style.background = "transparent";
+    }
+    buildSigils();
+  }
+
+  function closePuzzle() {
+    document.getElementById("puzzleOverlay").classList.remove("open");
+  }
+
+  function handleOverlayClick(e) {
+    if(e.target === document.getElementById("puzzleOverlay")) closePuzzle();
+  }
+
+  function checkRiddle(btn, result) {
+    document.querySelectorAll(".puzzle-choice").forEach(function(b) { b.disabled = true; });
+    if(result === "correct") {
+      btn.classList.add("correct");
+      document.getElementById("riddleMsg").style.color = "#4eba70";
+      document.getElementById("riddleMsg").textContent = "✓ The bag shudders with recognition...";
+      setTimeout(function() {
+        document.getElementById("stage1").style.display = "none";
+        document.getElementById("stage2").style.display = "block";
+      }, 1100);
+    } else {
+      btn.classList.add("wrong");
+      document.getElementById("riddleMsg").style.color = "#cc4444";
+      document.getElementById("riddleMsg").textContent = "✗ The bag remains closed. Think again...";
+      setTimeout(function() {
+        document.querySelectorAll(".puzzle-choice").forEach(function(b) {
+          b.disabled = false; b.classList.remove("wrong", "correct");
+        });
+        document.getElementById("riddleMsg").textContent = "";
+      }, 1400);
+    }
+  }
+
+  function checkLock() {
+    var val = parseInt(document.getElementById("lockInput").value);
+    if(val === 20) {
+      document.getElementById("lockMsg").style.color = "#4eba70";
+      document.getElementById("lockMsg").textContent = "✓ The lock clicks open...";
+      setTimeout(function() {
+        document.getElementById("stage2").style.display = "none";
+        document.getElementById("stage3").style.display = "block";
+      }, 1100);
+    } else {
+      document.getElementById("lockMsg").style.color = "#cc4444";
+      document.getElementById("lockMsg").textContent = "✗ Wrong. The lock holds firm.";
+      setTimeout(function() { document.getElementById("lockMsg").textContent = ""; }, 1400);
+    }
+  }
+
+  function buildSigils() {
+    shuffledSigils = sigils.slice().sort(function() { return Math.random() - 0.5; });
+    var grid = document.getElementById("sigilGrid");
+    grid.innerHTML = "";
+    shuffledSigils.forEach(function(s, i) {
+      var btn = document.createElement("button");
+      btn.className = "sigil-btn";
+      var span1 = document.createElement("span");
+      span1.textContent = s.icon;
+      var span2 = document.createElement("span");
+      span2.className = "slabel";
+      span2.textContent = s.label;
+      btn.appendChild(span1);
+      btn.appendChild(span2);
+      btn.dataset.rank = s.rank;
+      (function(rank) {
+        btn.onclick = function() { clickSigil(btn, rank); };
+      })(s.rank);
+      grid.appendChild(btn);
+    });
+  }
+
+  function clickSigil(btn, rank) {
+    if(btn.classList.contains("used")) return;
+    var expected = puzzleSigilOrder.length;
+    if(rank === expected) {
+      btn.classList.add("used");
+      puzzleSigilOrder.push(rank);
+      document.getElementById("sp" + expected).style.background = "#c9922a";
+      document.getElementById("sigilMsg").style.color = "#4eba70";
+      var msgs = ["✓ First seal...", "✓ Second seal...", "✓ Third seal...", "✓ All seals broken!"];
+      document.getElementById("sigilMsg").textContent = msgs[expected] || "";
+      if(puzzleSigilOrder.length === 4) {
+        setTimeout(function() {
+          document.getElementById("stage3").style.display = "none";
+          document.getElementById("stage4").style.display = "block";
+        }, 900);
+      }
+    } else {
+      document.getElementById("sigilMsg").style.color = "#cc4444";
+      document.getElementById("sigilMsg").textContent = "✗ Wrong order — the seals reset.";
+      puzzleSigilOrder = [];
+      for(var i = 0; i < 4; i++) {
+        document.getElementById("sp" + i).style.background = "transparent";
+      }
+      setTimeout(function() {
+        document.querySelectorAll(".sigil-btn").forEach(function(b) { b.classList.remove("used"); });
+        document.getElementById("sigilMsg").textContent = "";
+      }, 1000);
+    }
+  }
+
+  function claimBag() {
+    var bag = shopItems.magic.find(function(i) { return i.id === 105; });
+    if(bag) bag.price = 0;
+    closePuzzle();
+    renderGrid("magic");
+    showToast("✨", "The Bag of Holding is yours — free of charge!", "success");
+  }
+</script>
+
+</body>
+</html>
