@@ -631,6 +631,74 @@
       <div class="merchant-quote">"🩸 Back already? Good. The magic shop is mine, and so is this parlour. Sit — Gabriella will find the right mark for you."</div>
       <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
     </div>
+
+    <!-- RUNE GAME -->
+    <div style="max-width:640px;margin:0 auto 2.5rem;">
+      <div style="background:rgba(0,0,0,0.4);border:2px solid rgba(192,54,74,0.4);border-radius:10px;padding:1.5rem;">
+        <div style="text-align:center;margin-bottom:1rem;">
+          <div style="font-family:'Cinzel Decorative',cursive;color:#ff8899;font-size:1rem;text-shadow:0 0 10px rgba(192,54,74,0.5);">🩸 Gabriella's Rune Trial</div>
+          <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.13em;text-transform:uppercase;color:#8a4050;margin-top:3px;">Remember the sequence — repeat it back</div>
+        </div>
+
+        <!-- STATUS -->
+        <div style="display:flex;justify-content:center;gap:2rem;margin-bottom:1rem;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#8a4050;">Round</div>
+            <div id="runeRound" style="font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:#ff8899;">—</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#8a4050;">Sequence</div>
+            <div id="runeSeqLen" style="font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:#ff8899;">—</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#8a4050;">Your input</div>
+            <div id="runeProgress" style="font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:#ff8899;">—</div>
+          </div>
+        </div>
+
+        <!-- RUNE GRID -->
+        <div id="runeGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:320px;margin:0 auto 1rem;"></div>
+
+        <!-- MESSAGE -->
+        <div id="runeMsg" style="text-align:center;font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;min-height:1.3rem;margin-bottom:0.8rem;color:#ff8899;"></div>
+
+        <!-- BUTTONS -->
+        <div style="display:flex;gap:0.6rem;justify-content:center;">
+          <button id="runeStartBtn" class="bj-action" onclick="runeStart()" style="border-color:rgba(192,54,74,0.5);">🩸 Begin Trial</button>
+        </div>
+
+        <!-- WIN REVEAL -->
+        <div id="runeWinBox" style="display:none;margin-top:1.2rem;background:rgba(0,0,0,0.5);border:2px solid #ff8899;border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-family:'Cinzel Decorative',cursive;color:#ff8899;font-size:0.9rem;margin-bottom:0.4rem;">✦ The Runes Accept You ✦</div>
+          <div style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.82rem;line-height:1.6;">"Impressive. Most leave after the fourth round. Choose any tattoo — the inking is on me."</div>
+          <div style="margin-top:0.8rem;font-family:'Cinzel',serif;font-size:0.72rem;color:#8a4050;letter-spacing:0.1em;text-transform:uppercase;">Choose one Common or Uncommon tattoo — it's on Gabriella</div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .rune-btn {
+        aspect-ratio: 1;
+        border-radius: 8px;
+        border: 2px solid rgba(192,54,74,0.35);
+        background: rgba(0,0,0,0.45);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: transform 0.1s, box-shadow 0.1s;
+        padding: 8px;
+        user-select: none;
+      }
+      .rune-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+      .rune-btn .rune-symbol { font-size: 1.8rem; line-height: 1; }
+      .rune-btn .rune-name { font-family: 'Cinzel', serif; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
+      .rune-btn.flash { transform: scale(1.08); box-shadow: 0 0 18px 4px var(--rune-glow); }
+      .rune-btn.press { transform: scale(0.94); }
+    </style>
+
     <div class="filter-bar" id="filterBar-tattoo">
       <span class="filter-label">Filter:</span>
       <button class="filter-btn active" onclick="setFilter('tattoo','all',this)">All</button>
@@ -1010,13 +1078,12 @@
         <div class="item-desc">${item.desc}</div>
         <div class="item-footer">
           <div>
-            <div class="item-price"><span class="coin">💰</span>${item.price === 0 ? '<span style="color:#2d8a4e;font-weight:700;">FREE!</span>' : item.price.toLocaleString() + ' gp'}</div>
+            <div class="item-price"><span class="coin">💰</span>${item.price === 0 && !item.freePickable ? '<span style="color:#2d8a4e;font-weight:700;">FREE!</span>' : item.freePickable ? '<span style="color:#ff8899;font-weight:700;">🩸 Free Pick!</span>' : item.price.toLocaleString() + ' gp'}</div>
             <div class="item-stock">${cartQty > 0 ? `${cartQty} in satchel · ` : ''}${stockLabel}</div>
           </div>
           <div style="display:flex;gap:4px;align-items:center;">
-            <button class="add-to-cart-btn ${inCart ? 'in-cart' : ''}" onclick="addToCart(${item.id})" ${outOfStock || atMax ? 'disabled' : ''}>
-              ${outOfStock ? 'Sold Out' : atMax ? '✓ Max' : inCart ? '+ More' : '+ Add'}
-            </button>
+            ${item.freePickable ? '<button class="add-to-cart-btn" onclick="runeClaimFree(' + item.id + ')" style="background:linear-gradient(135deg,#6b1a2a,#c0364a);border-color:#ff8899;">🩸 Claim</button>' : ''}
+            ${!item.freePickable ? '<button class="add-to-cart-btn ' + (inCart ? 'in-cart' : '') + '" onclick="addToCart(' + item.id + ')" ' + (outOfStock || atMax ? 'disabled' : '') + '>' + (outOfStock ? 'Sold Out' : atMax ? '✓ Max' : inCart ? '+ More' : '+ Add') + '</button>' : ''}
           </div>
         </div>
       `;
@@ -1545,6 +1612,174 @@ switchTab = function(tab, btn) {
 // init deck
 dmdBuildDeck();
 dmdUpdateStreak();
+</script>
+<!-- RUNE GAME SCRIPT -->
+<script>
+var RUNES = [
+  { symbol: 'ᚠ', name: 'Fehu',   color: '#e05050', glow: 'rgba(224,80,80,0.7)'   },
+  { symbol: 'ᚢ', name: 'Uruz',   color: '#e08830', glow: 'rgba(224,136,48,0.7)'  },
+  { symbol: 'ᚦ', name: 'Thuris', color: '#d4c030', glow: 'rgba(212,192,48,0.7)'  },
+  { symbol: 'ᚨ', name: 'Ansuz',  color: '#50c050', glow: 'rgba(80,192,80,0.7)'   },
+  { symbol: 'ᚱ', name: 'Raidho', color: '#4090e0', glow: 'rgba(64,144,224,0.7)'  },
+  { symbol: 'ᚲ', name: 'Kenaz',  color: '#b060e0', glow: 'rgba(176,96,224,0.7)'  }
+];
+
+var runeSequence = [];
+var runePlayerInput = [];
+var runeCurrentRound = 0;   // 0-indexed, rounds 0-5 = seq length 3-8
+var runeShowingSeq = false;
+var runeTattooUnlocked = false;
+var runeFailCount = 0;
+var RUNE_ROUNDS = [3];
+
+function runeBuildGrid() {
+  var grid = document.getElementById('runeGrid');
+  grid.innerHTML = '';
+  RUNES.forEach(function(r, i) {
+    var btn = document.createElement('button');
+    btn.className = 'rune-btn';
+    btn.id = 'rune' + i;
+    btn.style.setProperty('--rune-glow', r.glow);
+    btn.disabled = true;
+    btn.innerHTML = '<span class="rune-symbol" style="color:' + r.color + '">' + r.symbol + '</span><span class="rune-name" style="color:' + r.color + '">' + r.name + '</span>';
+    btn.onclick = function() { runePlayerClick(i); };
+    grid.appendChild(btn);
+  });
+}
+
+function runeMsg(text, color) {
+  var el = document.getElementById('runeMsg');
+  el.textContent = text;
+  el.style.color = color || '#ff8899';
+}
+
+function runeUpdateStatus() {
+  var seqLen = RUNE_ROUNDS[runeCurrentRound] || '—';
+  document.getElementById('runeRound').textContent = runeCurrentRound < RUNE_ROUNDS.length ? (runeCurrentRound + 1) + ' / 1' : '✦';
+  document.getElementById('runeSeqLen').textContent = runeShowingSeq ? seqLen : (runeCurrentRound < RUNE_ROUNDS.length ? seqLen : '—');
+  document.getElementById('runeProgress').textContent = runeShowingSeq ? '...' : (runePlayerInput.length + ' / ' + (RUNE_ROUNDS[runeCurrentRound] || '—'));
+}
+
+function runeSetButtons(enabled) {
+  RUNES.forEach(function(r, i) {
+    document.getElementById('rune' + i).disabled = !enabled;
+  });
+}
+
+function runeStart() {
+  document.getElementById('runeStartBtn').style.display = 'none';
+  document.getElementById('runeWinBox').style.display = 'none';
+  runeCurrentRound = 0;
+  runeFailCount = 0;
+  runeBeginRound();
+}
+
+function runeBeginRound() {
+  var seqLen = RUNE_ROUNDS[runeCurrentRound];
+  runeSequence = [];
+  for(var i = 0; i < seqLen; i++) {
+    runeSequence.push(Math.floor(Math.random() * 6));
+  }
+  runePlayerInput = [];
+  runeShowingSeq = true;
+  runeSetButtons(false);
+  runeUpdateStatus();
+  runeMsg('👁 Watch the runes...', '#ff8899');
+  runePlaySequence(0);
+}
+
+function runePlaySequence(idx) {
+  if(idx >= runeSequence.length) {
+    runeShowingSeq = false;
+    runeSetButtons(true);
+    runeUpdateStatus();
+    runeMsg('Your turn — repeat the sequence!', '#e8d49a');
+    return;
+  }
+  var runeIdx = runeSequence[idx];
+  var btn = document.getElementById('rune' + runeIdx);
+  var delay = runeFailCount >= 3 ? 900 : 500;
+  var flashDur = runeFailCount >= 3 ? 700 : 400;
+
+  setTimeout(function() {
+    btn.classList.add('flash');
+    setTimeout(function() {
+      btn.classList.remove('flash');
+      runePlaySequence(idx + 1);
+    }, flashDur);
+  }, delay);
+}
+
+function runePlayerClick(idx) {
+  if(runeShowingSeq) return;
+  var btn = document.getElementById('rune' + idx);
+  btn.classList.add('press');
+  setTimeout(function() { btn.classList.remove('press'); }, 120);
+
+  runePlayerInput.push(idx);
+  var pos = runePlayerInput.length - 1;
+
+  if(runePlayerInput[pos] !== runeSequence[pos]) {
+    // WRONG
+    runeFailCount++;
+    runeSetButtons(false);
+    runeMsg('✗ Wrong! Starting over from round 1...', '#cc4444');
+    runeCurrentRound = 0;
+    setTimeout(function() {
+      runeMsg(runeFailCount >= 3 ? '👁 Slowing down to help you...': '');
+      runeBeginRound();
+    }, 1400);
+    return;
+  }
+
+  runeUpdateStatus();
+
+  if(runePlayerInput.length === runeSequence.length) {
+    // ROUND COMPLETE
+    runeSetButtons(false);
+    runeCurrentRound++;
+    if(runeCurrentRound >= RUNE_ROUNDS.length) {
+      // ALL ROUNDS DONE
+      runeMsg('✦ The runes accept you! ✦', '#f0b840');
+      runeUpdateStatus();
+      setTimeout(function() {
+        document.getElementById('runeWinBox').style.display = 'block';
+        if(!runeTattooUnlocked) {
+          runeTattooUnlocked = true;
+          runeEnableFreePick();
+        }
+      }, 600);
+    } else {
+      runeMsg('✓ Round ' + runeCurrentRound + ' complete! Next: ' + RUNE_ROUNDS[runeCurrentRound] + ' runes...', '#4eba70');
+      setTimeout(runeBeginRound, 1200);
+    }
+  }
+}
+
+function runeClaimFree(id) {
+  var item = shopItems.tattoo.find(function(i) { return i.id === id; });
+  if(!item || !item.freePickable) return;
+  // remove freePickable from all tattoos
+  shopItems.tattoo.forEach(function(i) { delete i.freePickable; });
+  // set this one to price 0 and add to cart
+  item.price = 0;
+  addToCart(id);
+  renderGrid('tattoo');
+  showToast('🩸', item.name + ' claimed — Gabriella\'s gift!', 'success');
+}
+
+function runeEnableFreePick() {
+  // Mark common and uncommon tattoos as free-pickable
+  shopItems.tattoo.forEach(function(item) {
+    if(item.rarity === 'common' || item.rarity === 'uncommon') {
+      item.freePickable = true;
+    }
+  });
+  renderGrid('tattoo');
+  showToast('🩸', 'Pick one Common or Uncommon tattoo — free!', 'success');
+}
+
+runeBuildGrid();
 </script>
 </body>
 </html>
