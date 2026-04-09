@@ -447,6 +447,177 @@
       <div class="merchant-quote">"🏪 Honest goods at honest prices. No sorcery here — just solid craftsmanship."</div>
       <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
     </div>
+
+
+    <style>
+      .bj-chip {
+        background: linear-gradient(135deg, #5a0f0f, #8b1a1a);
+        border: 2px solid rgba(240,184,64,0.4);
+        border-radius: 50px;
+        padding: 0.35rem 0.9rem;
+        color: #f4e4bc;
+        font-family: 'Cinzel', serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        letter-spacing: 0.05em;
+      }
+      .bj-chip:hover { background: linear-gradient(135deg, #8b1a1a, #bb3a3a); border-color: #f0b840; transform: translateY(-2px); }
+      .bj-action {
+        background: linear-gradient(135deg, #3d1f0a, #6b3a1f);
+        border: 1px solid rgba(201,146,42,0.4);
+        border-radius: 6px;
+        padding: 0.5rem 1.1rem;
+        color: #f4e4bc;
+        font-family: 'Cinzel', serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        letter-spacing: 0.05em;
+      }
+      .bj-action:hover:not(:disabled) { border-color: #f0b840; background: linear-gradient(135deg, #6b3a1f, #9b5a2f); }
+      .bj-action:disabled { opacity: 0.35; cursor: not-allowed; }
+      .bj-danger { border-color: rgba(139,26,26,0.5); }
+      .bj-danger:hover:not(:disabled) { background: linear-gradient(135deg, #5a0f0f, #8b1a1a) !important; border-color: #cc4444 !important; }
+      .bj-card {
+        background: #f4e4bc;
+        border: 1px solid #c9922a;
+        border-radius: 6px;
+        width: 44px;
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a0a00;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+        flex-shrink: 0;
+        animation: cardDeal 0.25s ease;
+        line-height: 1.1;
+      }
+      .bj-card.red { color: #8b1a1a; }
+      .bj-card.hidden { background: linear-gradient(135deg, #1a0a2e, #3d1f6b); color: transparent; font-size: 1.4rem; }
+      .bj-card.hidden::after { content: '🂠'; font-size: 1.6rem; color: #c9922a; }
+      @keyframes cardDeal { from { opacity:0; transform: translateY(-12px) rotate(-5deg); } to { opacity:1; transform: none; } }
+    </style>
+
+    <!-- DEAD MAN'S DRAW — hidden -->
+    <div style="max-width:680px;margin:0 auto 2rem;">
+      <div onclick="toggleDMD()" style="cursor:pointer;display:flex;align-items:center;gap:0.6rem;opacity:0.65;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.65'">
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,146,42,0.5));"></div>
+        <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:#8a6015;">🗝 a dusty crate sits in the corner... 📦</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(201,146,42,0.5),transparent);"></div>
+      </div>
+
+      <div id="dmdSection" style="display:none;margin-top:1rem;background:rgba(0,0,0,0.35);border:2px solid rgba(90,50,20,0.5);border-radius:10px;padding:1.5rem;">
+        <div style="text-align:center;margin-bottom:1rem;">
+          <div style="font-family:'Cinzel Decorative',cursive;color:#c9922a;font-size:1rem;text-shadow:0 0 10px rgba(201,146,42,0.3);">💀 Dead Man's Draw 🎴</div>
+          <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.13em;text-transform:uppercase;color:#6b4a30;margin-top:3px;">🩸 Keep drawing — or bank before the suit repeats 🩸</div>
+        </div>
+
+        <!-- deck counter -->
+        <div style="text-align:center;margin-bottom:0.8rem;">
+          <span style="font-family:'Cinzel',serif;font-size:0.72rem;color:#6b4a30;">Cards left in deck: </span>
+          <span id="dmdDeckCount" style="font-family:'Cinzel',serif;font-size:0.82rem;color:#c9922a;font-weight:700;">52</span>
+          <span style="font-family:'Cinzel',serif;font-size:0.72rem;color:#6b4a30;margin-left:1rem;">Bet: </span>
+          <span id="dmdBetDisplay" style="font-family:'Cinzel',serif;font-size:0.82rem;color:#f0b840;font-weight:700;">0 gp</span>
+          <span style="font-family:'Cinzel',serif;font-size:0.72rem;color:#6b4a30;margin-left:1rem;">Purse: </span>
+          <span id="dmdPurseDisplay" style="font-family:'Cinzel',serif;font-size:0.82rem;color:#f0b840;font-weight:700;">0 gp</span>
+        </div>
+
+        <!-- bet chips -->
+        <div id="dmdBetRow" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+          <span style="font-family:'Cinzel',serif;font-size:0.72rem;color:#e8d49a;">Bet:</span>
+          <button class="bj-chip" onclick="dmdBet(5)">5 gp</button>
+          <button class="bj-chip" onclick="dmdBet(10)">10 gp</button>
+          <button class="bj-chip" onclick="dmdBet(25)">25 gp</button>
+          <button class="bj-chip" onclick="dmdBet(50)">50 gp</button>
+          <button class="bj-chip" onclick="dmdBet(100)">100 gp</button>
+          <button class="bj-action bj-danger" id="dmdClearBtn" onclick="dmdClearBet()" disabled style="padding:0.3rem 0.7rem;font-size:0.68rem;">✕</button>
+        </div>
+
+        <!-- pile and suits -->
+        <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(90,50,20,0.5);border-radius:8px;padding:1rem;margin-bottom:0.8rem;min-height:120px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+            <div style="flex:1;min-width:180px;">
+              <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#6b4a30;margin-bottom:0.4rem;">🃏 Your Pile</div>
+              <div id="dmdPile" style="display:flex;gap:5px;flex-wrap:wrap;min-height:65px;align-items:center;"></div>
+              <div id="dmdPileScore" style="font-family:'Cinzel',serif;font-size:0.72rem;color:#c9922a;margin-top:4px;"></div>
+            </div>
+            <div style="min-width:120px;">
+              <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#6b4a30;margin-bottom:0.4rem;">♠ Suits in pile</div>
+              <div id="dmdSuits" style="display:flex;gap:6px;font-size:1.3rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- message -->
+        <div id="dmdMessage" style="text-align:center;font-family:'Cinzel',serif;font-size:0.88rem;font-weight:700;min-height:1.3rem;margin-bottom:0.8rem;color:#f0b840;"></div>
+
+        <!-- action buttons -->
+        <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
+          <button id="dmdStartBtn" class="bj-action" onclick="dmdStart()" disabled>🎲 Start Round</button>
+          <button id="dmdDrawBtn" class="bj-action" onclick="dmdDraw()" disabled>🃏 Draw</button>
+          <button id="dmdBankBtn" class="bj-action" onclick="dmdBank()" disabled style="background:linear-gradient(135deg,#1a4a20,#2a6b30);border-color:#3a8a40;">💰 Bank It!</button>
+        </div>
+
+        <!-- STREAK TRACKER -->
+        <div style="margin-top:1.2rem;text-align:center;">
+          <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#6b4a30;margin-bottom:0.5rem;">🔥 Win Streak — Reveal the Secret Code</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-bottom:0.6rem;">
+            <div class="streak-slot" id="ss0">?</div>
+            <div class="streak-slot" id="ss1">?</div>
+            <div class="streak-slot" id="ss2">?</div>
+            <div class="streak-slot" id="ss3">?</div>
+            <div class="streak-slot" id="ss4">?</div>
+          </div>
+          <div id="streakMsg" style="font-family:'Cinzel',serif;font-size:0.72rem;color:#6b4a30;min-height:1rem;"></div>
+          <div id="codeReveal" style="display:none;margin-top:0.8rem;background:rgba(0,0,0,0.5);border:2px solid #f0b840;border-radius:8px;padding:0.8rem 1.2rem;">
+            <div style="font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#8a6015;margin-bottom:0.4rem;">✦ Your Secret Code ✦</div>
+            <div id="fullCode" style="font-family:'Cinzel Decorative',cursive;font-size:1.6rem;color:#f0b840;letter-spacing:0.3em;text-shadow:0 0 15px rgba(240,184,64,0.7);"></div>
+            <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:0.75rem;color:#c9922a;margin-top:0.5rem;">Show this to your Dungeon Master to claim your reward.</div>
+          </div>
+        </div>
+
+        <style>
+          .streak-slot {
+            width: 38px; height: 46px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(90,50,20,0.6);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.1rem;
+            color: #4a3020;
+            transition: all 0.4s;
+          }
+          .streak-slot.filled {
+            background: rgba(201,146,42,0.15);
+            border-color: #c9922a;
+            color: #f0b840;
+            text-shadow: 0 0 8px rgba(240,184,64,0.6);
+          }
+          .streak-slot.complete {
+            background: rgba(240,184,64,0.2);
+            border-color: #f0b840;
+            color: #f0b840;
+            box-shadow: 0 0 12px rgba(240,184,64,0.4);
+          }
+        </style>
+        <div style="text-align:center;margin-top:0.6rem;">
+          <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:0.88rem;color:#c9922a;line-height:1.7;text-align:center;background:rgba(0,0,0,0.25);border:1px solid rgba(201,146,42,0.2);border-radius:6px;padding:0.6rem 1rem;">
+            Bank <strong>15+ points</strong> to win your bet &nbsp;·&nbsp;
+            Draw <strong>4+ cards</strong> and bank to win <span style="color:#f0b840;font-size:1.05rem;font-weight:700;">51×</span> your bet &nbsp;·&nbsp;
+            A repeated suit 💀 <strong>busts</strong> your pile
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="filter-bar" id="filterBar-general">
       <span class="filter-label">Filter:</span>
       <button class="filter-btn active" onclick="setFilter('general','all',this)">All</button>
@@ -486,6 +657,60 @@
       <li class="log-empty">No purchases yet...</li>
     </ul>
   </div>
+
+    <!-- BLACKJACK GAME -->
+    <div id="bjSection" style="background:rgba(0,0,0,0.35);border:2px solid rgba(201,146,42,0.35);border-radius:10px;padding:1.5rem;margin-bottom:2rem;max-width:680px;margin-left:auto;margin-right:auto;">
+      <div style="text-align:center;margin-bottom:1rem;">
+        <div style="font-family:'Cinzel Decorative',cursive;color:#f0b840;font-size:1.1rem;text-shadow:0 0 10px rgba(240,184,64,0.4);">🃏 The Back Room 🎰</div>
+        <div style="font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:#8a6015;margin-top:3px;">⚔️ Blackjack — Beat the House, Win Gold ⚔️</div>
+      </div>
+
+      <!-- BET ROW -->
+      <div id="bjBetRow" style="display:flex;align-items:center;justify-content:center;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <span style="font-family:'Cinzel',serif;font-size:0.75rem;color:#e8d49a;">Bet:</span>
+        <button class="bj-chip" onclick="bjBet(5)">5 gp</button>
+        <button class="bj-chip" onclick="bjBet(10)">10 gp</button>
+        <button class="bj-chip" onclick="bjBet(25)">25 gp</button>
+        <button class="bj-chip" onclick="bjBet(50)">50 gp</button>
+        <button class="bj-chip" onclick="bjBet(100)">100 gp</button>
+      </div>
+
+      <!-- CURRENT BET / DEAL -->
+      <div style="text-align:center;margin-bottom:1rem;">
+        <span style="font-family:'Cinzel',serif;font-size:0.78rem;color:#8a6015;">Current bet: </span>
+        <span id="bjBetDisplay" style="font-family:'Cinzel',serif;font-size:0.9rem;color:#f0b840;font-weight:700;">0 gp</span>
+        <span style="font-family:'Cinzel',serif;font-size:0.78rem;color:#8a6015;margin-left:1rem;">Purse: </span>
+        <span id="bjPurseDisplay" style="font-family:'Cinzel',serif;font-size:0.9rem;color:#f0b840;font-weight:700;">0 gp</span>
+      </div>
+
+      <!-- TABLE -->
+      <div style="background:rgba(0,60,20,0.5);border:1px solid rgba(0,100,40,0.6);border-radius:8px;padding:1rem;margin-bottom:1rem;min-height:200px;">
+        <div style="margin-bottom:0.8rem;">
+          <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:#6aaa40;margin-bottom:0.4rem;">🏴‍☠️ Dealer</div>
+          <div id="bjDealerCards" style="display:flex;gap:6px;flex-wrap:wrap;min-height:60px;align-items:center;"></div>
+          <div id="bjDealerScore" style="font-family:'Cinzel',serif;font-size:0.72rem;color:#a0d060;margin-top:4px;"></div>
+        </div>
+        <div style="border-top:1px solid rgba(0,100,40,0.4);padding-top:0.8rem;">
+          <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:#6aaa40;margin-bottom:0.4rem;">⚔️ Your Hand</div>
+          <div id="bjPlayerCards" style="display:flex;gap:6px;flex-wrap:wrap;min-height:60px;align-items:center;"></div>
+          <div id="bjPlayerScore" style="font-family:'Cinzel',serif;font-size:0.72rem;color:#a0d060;margin-top:4px;"></div>
+        </div>
+      </div>
+
+      <!-- MESSAGE -->
+      <div id="bjMessage" style="text-align:center;font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;min-height:1.4rem;margin-bottom:0.8rem;color:#f0b840;"></div>
+
+      <!-- ACTION BUTTONS -->
+      <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
+        <button id="bjDealBtn" class="bj-action" onclick="bjDeal()" disabled>🎲 Deal</button>
+        <button id="bjHitBtn" class="bj-action" onclick="bjHit()" disabled>🃏 Hit</button>
+        <button id="bjStandBtn" class="bj-action" onclick="bjStand()" disabled>🛑 Stand</button>
+        <button id="bjClearBtn" class="bj-action bj-danger" onclick="bjClearBet()" disabled>🗑️ Clear Bet</button>
+      </div>
+      <div style="text-align:center;margin-top:0.8rem;">
+        <button onclick="bjSync()" style="background:none;border:none;color:#6b4a30;font-family:'Cinzel',serif;font-size:0.65rem;cursor:pointer;letter-spacing:0.08em;">↺ Sync purse from wallet</button>
+      </div>
+    </div>
 </main>
 
 <div class="toast-container" id="toastContainer"></div>
@@ -510,13 +735,14 @@
       { id:102, name:"Potion of Greater Healing", icon:"❤️", desc:"Heals 4d4+4 hit points. Deeper crimson than the common variety. Bonus Action to drink.", price:200, rarity:"uncommon", category:"🧪 Potions", stock:2, link:"http://dnd2024.wikidot.com/magic-item:potion-of-healing" },
       { id:103, name:"+1 Longsword", icon:"⚔️", desc:"A well-balanced blade enchanted for accuracy. +1 to attack and damage rolls. No attunement needed.", price:300, rarity:"uncommon", category:"⚔️ Weapons", stock:1, link:"http://dnd2024.wikidot.com/magic-item:weapon-1-2-or-3" },
       { id:104, name:"Cloak of Protection", icon:"🧣", desc:"Woven with subtle runes. Requires attunement. +1 to AC and all saving throws.", price:800, rarity:"uncommon", category:"🛡️ Armour", stock:1, link:"http://dnd2024.wikidot.com/magic-item:cloak-of-protection" },
-      { id:105, name:"Bag of Holding", icon:"👜", desc:"Holds up to 500 lbs within 64 cubic feet. Interior far larger than it appears. <em style='color:#8a6015;font-size:0.78em;'>✦ Gabriella smirks: &ldquo;Solve my little riddle and it&rsquo;s yours for free, clever one...&rdquo;</em>", price:500, rarity:"uncommon", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:bag-of-holding", puzzle:true },
+      { id:105, name:"Bag of Holding", icon:"👜", desc:"Holds up to 500 lbs within 64 cubic feet. Interior far larger than it appears.", price:500, rarity:"uncommon", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:bag-of-holding" },
       { id:106, name:"Wand of Magic Missiles", icon:"✨", desc:"7 charges. Expend up to 3 charges to cast Magic Missile. Regains 1d6+1 charges at dawn.", price:500, rarity:"uncommon", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:wand-of-magic-missiles" },
       { id:107, name:"Ring of Protection", icon:"💍", desc:"Requires attunement. +1 bonus to AC and all saving throws while worn.", price:1000, rarity:"rare", category:"💍 Rings", stock:1, link:"http://dnd2024.wikidot.com/magic-item:ring-of-protection" },
       { id:108, name:"Pearl of Power", icon:"🔮", desc:"Requires attunement by a spellcaster. Once per day as a Magic action, regain one expended spell slot of 3rd level or lower.", price:2000, rarity:"uncommon", category:"✨ Wondrous", stock:2, link:"http://dnd2024.wikidot.com/magic-item:pearl-of-power" },
       { id:109, name:"Boots of Speed", icon:"👢", desc:"Requires attunement. Bonus Action: double your walking speed, and opportunity attacks against you have disadvantage. Lasts 10 minutes (1/day).", price:4000, rarity:"rare", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:boots-of-speed" },
       { id:110, name:"Necklace of Fireballs", icon:"🔥", desc:"1d6+3 beads remaining. Hurl a bead up to 60 ft — it detonates as a Fireball (DC 15, 5d6 fire per bead spent). Each bead adds to the explosion.", price:3000, rarity:"rare", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:necklace-of-fireballs" },
       { id:111, name:"Robe of Eyes", icon:"👁️", desc:"Requires attunement. See in all directions, darkvision 120 ft, see invisible and ethereal creatures. Cannot be blinded. Light sensitivity: daylight spells blind you for 1 min.", price:8000, rarity:"rare", category:"✨ Wondrous", stock:1, link:"http://dnd2024.wikidot.com/magic-item:robe-of-eyes" },
+      { id:112, name:"The Cheater's Sleeve", icon:"⚙️", desc:"<em>Wondrous Item, Uncommon (Requires Attunement)</em><br><br>A finely crafted mechanical brace of brass and darkened leather, worn beneath the sleeve along the forearm. Its inner track holds a hidden compartment just wide enough for a single card, coin, or object no larger than 3 inches. A near-silent spring mechanism can be triggered by a subtle flex of the wrist.<br><br><strong>Sleight of Hand.</strong> While attuned to this device, you have advantage on Dexterity (Sleight of Hand) checks.<br><br><strong>The Switch (1/Day).</strong> Once per day, as a free action on your turn, you may silently load or eject one card or Tiny object into or from the device's compartment. Any creature actively watching you must succeed on a Perception check contested by your Sleight of Hand to notice the exchange.<br><br><em>\"You didn't win five rounds by being honest. Why start now?\"</em>", price:0, rarity:"legendary", category:"✨ Wondrous", stock:1, link:null, hidden:true },
     ],
 
     general: [
@@ -760,7 +986,7 @@
     const grid = document.getElementById('shopGrid-' + tab);
     grid.innerHTML = '';
     const filter = activeFilters[tab];
-    const filtered = filter === 'all' ? shopItems[tab] : shopItems[tab].filter(i => i.category === filter);
+    const filtered = filter === 'all' ? shopItems[tab].filter(i => !i.hidden || i.unlocked) : shopItems[tab].filter(i => i.category === filter && (!i.hidden || i.unlocked));
     if (!filtered.length) { grid.innerHTML = '<div class="empty-shop"><div class="icon">🚪</div><p>No goods of that kind today...</p></div>'; return; }
     filtered.forEach((item, idx) => {
       const outOfStock = item.stock === 0;
@@ -788,7 +1014,6 @@
             <div class="item-stock">${cartQty > 0 ? `${cartQty} in satchel · ` : ''}${stockLabel}</div>
           </div>
           <div style="display:flex;gap:4px;align-items:center;">
-            ${item.puzzle && !outOfStock && item.price > 0 ? '<button class="add-to-cart-btn" onclick="openPuzzle()" style="background:linear-gradient(135deg,#4a2080,#7b3abf);border-color:#9b5adf;" title="Solve the puzzle to get this free!">🔮 Inspect</button>' : ''}
             <button class="add-to-cart-btn ${inCart ? 'in-cart' : ''}" onclick="addToCart(${item.id})" ${outOfStock || atMax ? 'disabled' : ''}>
               ${outOfStock ? 'Sold Out' : atMax ? '✓ Max' : inCart ? '+ More' : '+ Add'}
             </button>
@@ -818,270 +1043,508 @@
   updateCartFooter();
 </script>
 
-<!-- PUZZLE MODAL -->
-<style>
-  #puzzleOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  #puzzleOverlay.open {
-    display: flex !important;
-  }
-</style>
-<div id="puzzleOverlay" onclick="handleOverlayClick(event)">
-  <div id="puzzleBox" style="background:linear-gradient(180deg,#2a1a0e,#1c1008);border:2px solid #c9922a;border-radius:10px;max-width:480px;width:100%;padding:2rem;box-shadow:0 0 60px rgba(201,146,42,0.3);position:relative;max-height:85vh;overflow-y:auto;">
-    <button onclick="closePuzzle()" style="position:absolute;top:0.8rem;right:0.8rem;background:none;border:1px solid rgba(255,255,255,0.2);color:#e8d49a;width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:0.85rem;">✕</button>
-    <div style="text-align:center;margin-bottom:1.2rem;">
-      <div style="font-size:2.5rem;margin-bottom:0.5rem;">👜</div>
-      <div style="font-family:'Cinzel Decorative',cursive;color:#f0b840;font-size:1rem;text-shadow:0 0 10px rgba(240,184,64,0.5);">Gabriella's Challenge</div>
-      <div style="font-family:'Cinzel',serif;font-size:0.7rem;color:#8a6015;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px;">Speak the answer — claim the bag</div>
-    </div>
-
-    <!-- STAGE 1: RIDDLE -->
-    <div id="stage1">
-      <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(201,146,42,0.3);border-radius:6px;padding:1.2rem;margin-bottom:1rem;">
-        <p style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.95rem;line-height:1.7;text-align:center;margin:0;">
-          "I have no mouth yet I speak,<br>
-          no hands yet I reach,<br>
-          I hold everything you bring me<br>
-          yet I possess nothing at all.<br>
-          What am I?"
-        </p>
-      </div>
-      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem;">
-        <button class="puzzle-choice" onclick="checkRiddle(this,'wrong')" data-answer="a shadow">A Shadow</button>
-        <button class="puzzle-choice" onclick="checkRiddle(this,'wrong')" data-answer="the wind">The Wind</button>
-        <button class="puzzle-choice" onclick="checkRiddle(this,'correct')" data-answer="a bag">A Bag</button>
-        <button class="puzzle-choice" onclick="checkRiddle(this,'wrong')" data-answer="an echo">An Echo</button>
-      </div>
-      <div id="riddleMsg" style="text-align:center;font-family:'Cinzel',serif;font-size:0.78rem;min-height:1.2rem;"></div>
-    </div>
-
-    <!-- STAGE 2: LOCK PUZZLE -->
-    <div id="stage2" style="display:none;">
-      <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(201,146,42,0.3);border-radius:6px;padding:1rem;margin-bottom:1rem;text-align:center;">
-        <div style="font-family:'Cinzel',serif;font-size:0.75rem;color:#8a6015;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem;">Arcane Combination Lock</div>
-        <div style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.85rem;line-height:1.6;margin-bottom:0.8rem;">
-          "A wizard had 3 bags. The first held twice what the second held. The second held 10 gp more than the third. Together they held 110 gp. How many gold pieces were in the third bag?"
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;">
-          <input id="lockInput" type="number" min="0" max="999" placeholder="?" style="width:80px;text-align:center;font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;background:rgba(0,0,0,0.5);border:2px solid #8a6015;border-radius:4px;color:#f0b840;padding:0.4rem;" onkeydown="if(event.key==='Enter')checkLock()"/>
-          <span style="color:#c9922a;font-family:'Cinzel',serif;font-size:0.8rem;">gp</span>
-          <button onclick="checkLock()" style="background:linear-gradient(135deg,#5a0f0f,#8b1a1a);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:0.4rem 0.8rem;color:#f4e4bc;font-family:'Cinzel',serif;font-size:0.75rem;cursor:pointer;">Unlock</button>
-        </div>
-        <div id="lockMsg" style="text-align:center;font-family:'Cinzel',serif;font-size:0.78rem;min-height:1.2rem;margin-top:0.5rem;"></div>
-      </div>
-    </div>
-
-    <!-- STAGE 3: SLIDING SIGIL PUZZLE -->
-    <div id="stage3" style="display:none;">
-      <div style="text-align:center;margin-bottom:0.8rem;">
-        <div style="font-family:'Cinzel',serif;font-size:0.75rem;color:#8a6015;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;">Final Seal — Arrange the Sigils</div>
-        <div style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.82rem;">Order the runes from weakest to most powerful magic</div>
-      </div>
-      <div id="sigilGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:280px;margin:0 auto 0.8rem;"></div>
-      <div style="text-align:center;font-family:'Cinzel',serif;font-size:0.72rem;color:#6b4a30;margin-bottom:0.6rem;">Click sigils in order: Cantrip → Spell → Ritual → Archmage</div>
-      <div id="sigilProgress" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.6rem;">
-        <span id="sp0" style="width:20px;height:20px;border-radius:50%;border:1px solid #6b4a30;background:transparent;display:inline-block;"></span>
-        <span id="sp1" style="width:20px;height:20px;border-radius:50%;border:1px solid #6b4a30;background:transparent;display:inline-block;"></span>
-        <span id="sp2" style="width:20px;height:20px;border-radius:50%;border:1px solid #6b4a30;background:transparent;display:inline-block;"></span>
-        <span id="sp3" style="width:20px;height:20px;border-radius:50%;border:1px solid #6b4a30;background:transparent;display:inline-block;"></span>
-      </div>
-      <div id="sigilMsg" style="text-align:center;font-family:'Cinzel',serif;font-size:0.78rem;min-height:1.2rem;"></div>
-    </div>
-
-    <!-- STAGE 4: SUCCESS -->
-    <div id="stage4" style="display:none;text-align:center;">
-      <div style="font-size:3rem;margin-bottom:0.8rem;animation:pulse 1s ease infinite alternate;">✨</div>
-      <div style="font-family:'Cinzel Decorative',cursive;color:#f0b840;font-size:1.1rem;margin-bottom:0.5rem;">The Bag is Yours!</div>
-      <div style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.88rem;line-height:1.6;margin-bottom:1.2rem;">"Hah! Three seals, and you cracked them all. I knew I liked you. Take the bag — consider it a gift from Gabriella."</div>
-      <button onclick="claimBag()" style="background:linear-gradient(135deg,#1a4a20,#2a6b30);border:2px solid rgba(255,255,255,0.2);border-radius:6px;padding:0.7rem 2rem;color:#e0ffe0;font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:0.08em;">⚔ Claim the Bag — FREE</button>
-    </div>
-  </div>
-</div>
-
-<style>
-  .puzzle-choice {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(201,146,42,0.3);
-    border-radius: 4px;
-    padding: 0.5rem 0.9rem;
-    color: #e8d49a;
-    font-family: 'Cinzel', serif;
-    font-size: 0.78rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.05em;
-  }
-  .puzzle-choice:hover:not(:disabled) { background: rgba(201,146,42,0.15); border-color: #c9922a; }
-  .puzzle-choice:disabled { opacity: 0.4; cursor: not-allowed; }
-  .puzzle-choice.correct { background: rgba(45,138,78,0.3); border-color: #3a8a40; color: #a0e0a0; }
-  .puzzle-choice.wrong { background: rgba(139,26,26,0.3); border-color: #8b1a1a; color: #e08080; }
-  @keyframes pulse { from { opacity:0.7; transform:scale(1); } to { opacity:1; transform:scale(1.1); } }
-  .sigil-btn {
-    aspect-ratio: 1;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(201,146,42,0.25);
-    border-radius: 6px;
-    color: #e8d49a;
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 2px;
-    padding: 4px;
-  }
-  .sigil-btn:hover:not(:disabled):not(.used) { border-color: #c9922a; background: rgba(201,146,42,0.1); transform: scale(1.05); }
-  .sigil-btn.used { opacity: 0.3; cursor: not-allowed; }
-  .sigil-btn .slabel { font-family: 'Cinzel', serif; font-size: 0.45rem; letter-spacing: 0.05em; text-transform: uppercase; color: #8a6015; line-height: 1; }
-</style>
-
+<!-- BLACKJACK SCRIPT -->
 <script>
-  var puzzleSigilOrder = [];
-  var sigils = [
-    { icon: "🕯️", label: "Cantrip",  rank: 0 },
-    { icon: "⚡",  label: "Spell",    rank: 1 },
-    { icon: "📜", label: "Ritual",   rank: 2 },
-    { icon: "🔮", label: "Archmage", rank: 3 }
-  ];
-  var shuffledSigils = [];
+var bjDeck = [];
+var bjPlayerHand = [];
+var bjDealerHand = [];
+var bjCurrentBet = 0;
+var bjGameActive = false;
+var bjDealerRevealed = false;
 
-  function openPuzzle() {
-    puzzleSigilOrder = [];
-    document.getElementById("puzzleOverlay").classList.add("open");
-    document.getElementById("stage1").style.display = "block";
-    document.getElementById("stage2").style.display = "none";
-    document.getElementById("stage3").style.display = "none";
-    document.getElementById("stage4").style.display = "none";
-    document.getElementById("riddleMsg").textContent = "";
-    document.getElementById("lockMsg").textContent = "";
-    document.getElementById("sigilMsg").textContent = "";
-    document.getElementById("lockInput").value = "";
-    document.querySelectorAll(".puzzle-choice").forEach(function(b) {
-      b.disabled = false; b.className = "puzzle-choice";
-    });
-    for(var i = 0; i < 4; i++) {
-      document.getElementById("sp" + i).style.background = "transparent";
-    }
-    buildSigils();
-  }
+var SUITS = ['♠','♣','♥','♦'];
+var VALUES = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 
-  function closePuzzle() {
-    document.getElementById("puzzleOverlay").classList.remove("open");
-  }
+function bjSync() {
+  bjUpdatePurse();
+}
 
-  function handleOverlayClick(e) {
-    if(e.target === document.getElementById("puzzleOverlay")) closePuzzle();
-  }
+function bjUpdatePurse() {
+  document.getElementById('bjPurseDisplay').textContent = balance.toLocaleString() + ' gp';
+}
 
-  function checkRiddle(btn, result) {
-    document.querySelectorAll(".puzzle-choice").forEach(function(b) { b.disabled = true; });
-    if(result === "correct") {
-      btn.classList.add("correct");
-      document.getElementById("riddleMsg").style.color = "#4eba70";
-      document.getElementById("riddleMsg").textContent = "✓ The bag shudders with recognition...";
-      setTimeout(function() {
-        document.getElementById("stage1").style.display = "none";
-        document.getElementById("stage2").style.display = "block";
-      }, 1100);
-    } else {
-      btn.classList.add("wrong");
-      document.getElementById("riddleMsg").style.color = "#cc4444";
-      document.getElementById("riddleMsg").textContent = "✗ The bag remains closed. Think again...";
-      setTimeout(function() {
-        document.querySelectorAll(".puzzle-choice").forEach(function(b) {
-          b.disabled = false; b.classList.remove("wrong", "correct");
-        });
-        document.getElementById("riddleMsg").textContent = "";
-      }, 1400);
+function bjBuildDeck() {
+  bjDeck = [];
+  for(var s = 0; s < SUITS.length; s++) {
+    for(var v = 0; v < VALUES.length; v++) {
+      bjDeck.push({ suit: SUITS[s], val: VALUES[v] });
     }
   }
+  // shuffle
+  for(var i = bjDeck.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = bjDeck[i]; bjDeck[i] = bjDeck[j]; bjDeck[j] = tmp;
+  }
+}
 
-  function checkLock() {
-    var val = parseInt(document.getElementById("lockInput").value);
-    if(val === 20) {
-      document.getElementById("lockMsg").style.color = "#4eba70";
-      document.getElementById("lockMsg").textContent = "✓ The lock clicks open...";
-      setTimeout(function() {
-        document.getElementById("stage2").style.display = "none";
-        document.getElementById("stage3").style.display = "block";
-      }, 1100);
-    } else {
-      document.getElementById("lockMsg").style.color = "#cc4444";
-      document.getElementById("lockMsg").textContent = "✗ Wrong. The lock holds firm.";
-      setTimeout(function() { document.getElementById("lockMsg").textContent = ""; }, 1400);
-    }
+function bjCardValue(card) {
+  if(card.val === 'A') return 11;
+  if(card.val === 'J' || card.val === 'Q' || card.val === 'K') return 10;
+  return parseInt(card.val);
+}
+
+function bjHandTotal(hand) {
+  var total = 0;
+  var aces = 0;
+  for(var i = 0; i < hand.length; i++) {
+    total += bjCardValue(hand[i]);
+    if(hand[i].val === 'A') aces++;
+  }
+  while(total > 21 && aces > 0) {
+    total -= 10;
+    aces--;
+  }
+  return total;
+}
+
+function bjIsRed(card) {
+  return card.suit === '♥' || card.suit === '♦';
+}
+
+function bjRenderCard(card, hidden) {
+  var div = document.createElement('div');
+  div.className = 'bj-card' + (hidden ? ' hidden' : (bjIsRed(card) ? ' red' : ''));
+  if(!hidden) {
+    var top = document.createElement('div');
+    top.style.fontSize = '0.6rem';
+    top.textContent = card.val;
+    var suit = document.createElement('div');
+    suit.style.fontSize = '1.1rem';
+    suit.textContent = card.suit;
+    div.appendChild(top);
+    div.appendChild(suit);
+  }
+  return div;
+}
+
+function bjRenderHands(hideDealer) {
+  var pc = document.getElementById('bjPlayerCards');
+  var dc = document.getElementById('bjDealerCards');
+  pc.innerHTML = '';
+  dc.innerHTML = '';
+
+  for(var i = 0; i < bjPlayerHand.length; i++) {
+    pc.appendChild(bjRenderCard(bjPlayerHand[i], false));
+  }
+  for(var j = 0; j < bjDealerHand.length; j++) {
+    dc.appendChild(bjRenderCard(bjDealerHand[j], hideDealer && j === 1));
   }
 
-  function buildSigils() {
-    shuffledSigils = sigils.slice().sort(function() { return Math.random() - 0.5; });
-    var grid = document.getElementById("sigilGrid");
-    grid.innerHTML = "";
-    shuffledSigils.forEach(function(s, i) {
-      var btn = document.createElement("button");
-      btn.className = "sigil-btn";
-      var span1 = document.createElement("span");
-      span1.textContent = s.icon;
-      var span2 = document.createElement("span");
-      span2.className = "slabel";
-      span2.textContent = s.label;
-      btn.appendChild(span1);
-      btn.appendChild(span2);
-      btn.dataset.rank = s.rank;
-      (function(rank) {
-        btn.onclick = function() { clickSigil(btn, rank); };
-      })(s.rank);
-      grid.appendChild(btn);
-    });
+  var ptotal = bjHandTotal(bjPlayerHand);
+  document.getElementById('bjPlayerScore').textContent = 'Total: ' + ptotal;
+
+  if(hideDealer) {
+    document.getElementById('bjDealerScore').textContent = 'Showing: ' + bjCardValue(bjDealerHand[0]);
+  } else {
+    document.getElementById('bjDealerScore').textContent = 'Total: ' + bjHandTotal(bjDealerHand);
+  }
+}
+
+function bjMsg(text, color) {
+  var el = document.getElementById('bjMessage');
+  el.textContent = text;
+  el.style.color = color || '#f0b840';
+}
+
+function bjSetButtons(dealing) {
+  document.getElementById('bjDealBtn').disabled = dealing || bjCurrentBet === 0;
+  document.getElementById('bjHitBtn').disabled = !dealing;
+  document.getElementById('bjStandBtn').disabled = !dealing;
+  document.getElementById('bjClearBtn').disabled = dealing || bjCurrentBet === 0;
+  document.querySelectorAll('.bj-chip').forEach(function(b) { b.disabled = dealing; });
+}
+
+function bjBet(amount) {
+  if(bjGameActive) return;
+  bjUpdatePurse();
+  if(balance === 0) { showToast('💰', 'Set your purse first!', 'error'); return; }
+  if(bjCurrentBet + amount > balance) {
+    showToast('💰', 'Not enough gold!', 'error'); return;
+  }
+  bjCurrentBet += amount;
+  document.getElementById('bjBetDisplay').textContent = bjCurrentBet.toLocaleString() + ' gp';
+  bjMsg('');
+  bjSetButtons(false);
+}
+
+function bjClearBet() {
+  bjCurrentBet = 0;
+  document.getElementById('bjBetDisplay').textContent = '0 gp';
+  bjMsg('');
+  bjSetButtons(false);
+}
+
+function bjDeal() {
+  if(bjCurrentBet === 0 || bjCurrentBet > balance) return;
+  bjBuildDeck();
+  bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
+  bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
+  bjGameActive = true;
+  bjDealerRevealed = false;
+  bjRenderHands(true);
+  bjMsg('');
+  bjSetButtons(true);
+
+  // check natural blackjack
+  if(bjHandTotal(bjPlayerHand) === 21) {
+    bjRevealAndEnd();
+  }
+}
+
+function bjHit() {
+  if(!bjGameActive) return;
+  bjPlayerHand.push(bjDeck.pop());
+  bjRenderHands(true);
+  if(bjHandTotal(bjPlayerHand) > 21) {
+    bjEnd('bust');
+  } else if(bjHandTotal(bjPlayerHand) === 21) {
+    bjStand();
+  }
+}
+
+function bjDouble() {
+  if(!bjGameActive || bjPlayerHand.length !== 2) return;
+  bjCurrentBet *= 2;
+  document.getElementById('bjBetDisplay').textContent = bjCurrentBet.toLocaleString() + ' gp';
+  bjPlayerHand.push(bjDeck.pop());
+  bjRenderHands(true);
+  if(bjHandTotal(bjPlayerHand) > 21) {
+    bjEnd('bust');
+  } else {
+    bjStand();
+  }
+}
+
+function bjStand() {
+  if(!bjGameActive) return;
+  bjRevealAndEnd();
+}
+
+function bjRevealAndEnd() {
+  // dealer draws to 17
+  while(bjHandTotal(bjDealerHand) < 17) {
+    bjDealerHand.push(bjDeck.pop());
+  }
+  bjRenderHands(false);
+  var pt = bjHandTotal(bjPlayerHand);
+  var dt = bjHandTotal(bjDealerHand);
+
+  if(pt > 21) {
+    bjEnd('bust');
+  } else if(dt > 21) {
+    bjEnd('dealer_bust');
+  } else if(pt === 21 && bjPlayerHand.length === 2 && !(dt === 21 && bjDealerHand.length === 2)) {
+    bjEnd('blackjack');
+  } else if(pt > dt) {
+    bjEnd('win');
+  } else if(pt === dt) {
+    bjEnd('push');
+  } else {
+    bjEnd('lose');
+  }
+}
+
+function bjEnd(result) {
+  bjGameActive = false;
+  var winnings = 0;
+  if(result === 'blackjack') {
+    winnings = Math.floor(bjCurrentBet * 1.5);
+    balance += bjCurrentBet + winnings;
+    bjMsg('🃏 Blackjack! +' + (bjCurrentBet + winnings) + ' gp', '#f0b840');
+    showToast('🃏', 'Blackjack! +' + (bjCurrentBet + winnings) + ' gp', 'success');
+  } else if(result === 'win' || result === 'dealer_bust') {
+    balance += bjCurrentBet;
+    bjMsg((result === 'dealer_bust' ? '💥 Dealer busts! ' : '✓ You win! ') + '+' + bjCurrentBet + ' gp', '#4eba70');
+    showToast('💰', (result === 'dealer_bust' ? 'Dealer busts!' : 'You win!') + ' +' + bjCurrentBet + ' gp', 'success');
+  } else if(result === 'push') {
+    bjMsg('🤝 Push — bet returned', '#e8d49a');
+  } else if(result === 'bust') {
+    balance -= bjCurrentBet;
+    bjMsg('💀 Bust! −' + bjCurrentBet + ' gp', '#cc4444');
+    showToast('💀', 'Bust! −' + bjCurrentBet + ' gp', 'error');
+  } else {
+    balance -= bjCurrentBet;
+    bjMsg('✗ Dealer wins. −' + bjCurrentBet + ' gp', '#cc4444');
+    showToast('💰', 'Dealer wins. −' + bjCurrentBet + ' gp', 'error');
   }
 
-  function clickSigil(btn, rank) {
-    if(btn.classList.contains("used")) return;
-    var expected = puzzleSigilOrder.length;
-    if(rank === expected) {
-      btn.classList.add("used");
-      puzzleSigilOrder.push(rank);
-      document.getElementById("sp" + expected).style.background = "#c9922a";
-      document.getElementById("sigilMsg").style.color = "#4eba70";
-      var msgs = ["✓ First seal...", "✓ Second seal...", "✓ Third seal...", "✓ All seals broken!"];
-      document.getElementById("sigilMsg").textContent = msgs[expected] || "";
-      if(puzzleSigilOrder.length === 4) {
-        setTimeout(function() {
-          document.getElementById("stage3").style.display = "none";
-          document.getElementById("stage4").style.display = "block";
-        }, 900);
-      }
-    } else {
-      document.getElementById("sigilMsg").style.color = "#cc4444";
-      document.getElementById("sigilMsg").textContent = "✗ Wrong order — the seals reset.";
-      puzzleSigilOrder = [];
-      for(var i = 0; i < 4; i++) {
-        document.getElementById("sp" + i).style.background = "transparent";
-      }
-      setTimeout(function() {
-        document.querySelectorAll(".sigil-btn").forEach(function(b) { b.classList.remove("used"); });
-        document.getElementById("sigilMsg").textContent = "";
-      }, 1000);
-    }
-  }
+  bjCurrentBet = 0;
+  document.getElementById('bjBetDisplay').textContent = '0 gp';
+  updateBalanceDisplay();
+  bjUpdatePurse();
+  bjSetButtons(false);
+}
 
-  function claimBag() {
-    var bag = shopItems.magic.find(function(i) { return i.id === 105; });
-    if(bag) bag.price = 0;
-    closePuzzle();
-    renderGrid("magic");
-    showToast("✨", "The Bag of Holding is yours — free of charge!", "success");
-  }
+// sync purse when panel becomes active
+var _origSwitch = switchTab;
+switchTab = function(tab, btn) {
+  _origSwitch(tab, btn);
+  if(tab === 'general') bjUpdatePurse();
+};
+
+// init
+bjUpdatePurse();
 </script>
+<!-- DEAD MAN'S DRAW SCRIPT -->
+<script>
+var dmdDeck = [];
+var dmdPileCards = [];
+var dmdPileSuits = [];
+var dmdCurrentBet = 0;
+var dmdRoundActive = false;
+var dmdWinTarget = 15;
+var dmdStreak = 0;
+var dmdCodeChars = [];
+var DMD_FIXED_CODE = ['A','S','T','R','A'];
 
+function dmdGenChar() {
+  return DMD_FIXED_CODE[dmdCodeChars.length];
+}
+
+function toggleDMD() {
+  var sec = document.getElementById('dmdSection');
+  sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
+  if(sec.style.display === 'block') dmdUpdatePurse();
+}
+
+function dmdUpdatePurse() {
+  document.getElementById('dmdPurseDisplay').textContent = balance.toLocaleString() + ' gp';
+}
+
+function dmdBuildDeck() {
+  dmdDeck = [];
+  var suits = ['♠','♣','♥','♦'];
+  var vals = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  for(var s = 0; s < suits.length; s++) {
+    for(var v = 0; v < vals.length; v++) {
+      dmdDeck.push({ suit: suits[s], val: vals[v] });
+    }
+  }
+  for(var i = dmdDeck.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = dmdDeck[i]; dmdDeck[i] = dmdDeck[j]; dmdDeck[j] = tmp;
+  }
+  document.getElementById('dmdDeckCount').textContent = dmdDeck.length;
+}
+
+function dmdCardPoints(card) {
+  if(card.val === 'A') return 1;
+  if(card.val === 'J') return 11;
+  if(card.val === 'Q') return 12;
+  if(card.val === 'K') return 13;
+  return parseInt(card.val);
+}
+
+function dmdPileTotal() {
+  var t = 0;
+  for(var i = 0; i < dmdPileCards.length; i++) t += dmdCardPoints(dmdPileCards[i]);
+  return t;
+}
+
+function dmdRenderPile() {
+  var el = document.getElementById('dmdPile');
+  el.innerHTML = '';
+  for(var i = 0; i < dmdPileCards.length; i++) {
+    var c = dmdPileCards[i];
+    var div = document.createElement('div');
+    var isRed = c.suit === '♥' || c.suit === '♦';
+    div.className = 'bj-card' + (isRed ? ' red' : '');
+    var top = document.createElement('div');
+    top.style.fontSize = '0.55rem';
+    top.textContent = c.val;
+    var suit = document.createElement('div');
+    suit.style.fontSize = '1rem';
+    suit.textContent = c.suit;
+    div.appendChild(top);
+    div.appendChild(suit);
+    el.appendChild(div);
+  }
+  var total = dmdPileTotal();
+  document.getElementById('dmdPileScore').textContent = dmdPileCards.length > 0 ? 'Points: ' + total : '';
+
+  var suitsEl = document.getElementById('dmdSuits');
+  suitsEl.innerHTML = '';
+  var suitColors = { '♠':'#e8d49a', '♣':'#e8d49a', '♥':'#cc4444', '♦':'#cc4444' };
+  for(var s = 0; s < dmdPileSuits.length; s++) {
+    var sp = document.createElement('span');
+    sp.textContent = dmdPileSuits[s];
+    sp.style.color = suitColors[dmdPileSuits[s]] || '#e8d49a';
+    suitsEl.appendChild(sp);
+  }
+}
+
+function dmdMsg(text, color) {
+  var el = document.getElementById('dmdMessage');
+  el.textContent = text;
+  el.style.color = color || '#f0b840';
+}
+
+function dmdSetButtons(round) {
+  document.getElementById('dmdStartBtn').disabled = round || dmdCurrentBet === 0;
+  document.getElementById('dmdDrawBtn').disabled = !round;
+  document.getElementById('dmdBankBtn').disabled = !round || dmdPileCards.length === 0;
+  document.getElementById('dmdClearBtn').disabled = round || dmdCurrentBet === 0;
+  document.querySelectorAll('#dmdBetRow .bj-chip').forEach(function(b) { b.disabled = round; });
+}
+
+function dmdBet(amount) {
+  if(dmdRoundActive) return;
+  dmdUpdatePurse();
+  if(balance === 0) { showToast('💰', 'Set your purse first!', 'error'); return; }
+  if(dmdCurrentBet + amount > balance) { showToast('💰', 'Not enough gold!', 'error'); return; }
+  dmdCurrentBet += amount;
+  document.getElementById('dmdBetDisplay').textContent = dmdCurrentBet.toLocaleString() + ' gp';
+  dmdSetButtons(false);
+  dmdMsg('');
+}
+
+function dmdClearBet() {
+  dmdCurrentBet = 0;
+  document.getElementById('dmdBetDisplay').textContent = '0 gp';
+  dmdSetButtons(false);
+  dmdMsg('');
+}
+
+function dmdStart() {
+  if(dmdCurrentBet === 0 || dmdCurrentBet > balance) return;
+  if(dmdDeck.length < 10) {
+    dmdBuildDeck();
+    dmdMsg('The deck was reshuffled.', '#c9922a');
+    setTimeout(function() { dmdMsg(''); }, 1500);
+  }
+  dmdPileCards = [];
+  dmdPileSuits = [];
+  dmdRoundActive = true;
+  dmdRenderPile();
+  dmdSetButtons(true);
+  dmdMsg('Draw cards — bank before a suit repeats!');
+}
+
+function dmdDraw() {
+  if(!dmdRoundActive || dmdDeck.length === 0) return;
+  var card = dmdDeck.pop();
+  document.getElementById('dmdDeckCount').textContent = dmdDeck.length;
+
+  if(dmdPileSuits.indexOf(card.suit) !== -1) {
+    // BUST — show the card briefly then end
+    dmdPileCards.push(card);
+    dmdRenderPile();
+    dmdRoundActive = false;
+    balance -= dmdCurrentBet;
+    dmdMsg('💀 ' + card.suit + ' already in pile — bust! −' + dmdCurrentBet + ' gp', '#cc4444');
+    showToast('💀', 'Bust! −' + dmdCurrentBet + ' gp', 'error');
+    dmdStreak = 0;
+    dmdCodeChars = [];
+    dmdUpdateStreak();
+    dmdCurrentBet = 0;
+    document.getElementById('dmdBetDisplay').textContent = '0 gp';
+    updateBalanceDisplay();
+    dmdUpdatePurse();
+    dmdSetButtons(false);
+  } else {
+    dmdPileCards.push(card);
+    dmdPileSuits.push(card.suit);
+    dmdRenderPile();
+    var total = dmdPileTotal();
+    var cardCount = dmdPileCards.length;
+    if(dmdDeck.length === 0) {
+      dmdMsg('Deck empty — forced bank!', '#c9922a');
+      setTimeout(dmdBank, 800);
+      return;
+    }
+    if(cardCount === 3) {
+      dmdMsg('⚡ One more card = 51× payout if you bank! ' + total + ' pts so far...', '#f0b840');
+    } else if(cardCount >= 4) {
+      dmdMsg('🌟 ' + cardCount + ' cards! Bank now for 51× — ' + total + ' pts', '#f0b840');
+    } else if(total >= dmdWinTarget) {
+      dmdMsg('✦ ' + total + ' pts — bank now or push your luck!', '#f0b840');
+    } else {
+      dmdMsg(total + ' pts — keep going or bank?');
+    }
+    dmdSetButtons(true);
+  }
+}
+
+function dmdBank() {
+  if(!dmdRoundActive || dmdPileCards.length === 0) return;
+  dmdRoundActive = false;
+  var total = dmdPileTotal();
+  var cardCount = dmdPileCards.length;
+  if(total >= dmdWinTarget) {
+    if(cardCount >= 4) {
+      var winnings = dmdCurrentBet * 51;
+      balance += winnings;
+      dmdMsg('🌟 ' + cardCount + ' cards, ' + total + ' pts — FIFTY ONE TIMES! +' + winnings + ' gp', '#f0b840');
+      showToast('🌟', '51× payout! +' + winnings + ' gp', 'success');
+    } else {
+      balance += dmdCurrentBet;
+      dmdMsg('✓ Banked ' + total + ' pts — you win! +' + dmdCurrentBet + ' gp', '#4eba70');
+      showToast('💰', 'Banked! +' + dmdCurrentBet + ' gp', 'success');
+    }
+    dmdStreak++;
+    var ch = dmdGenChar();
+    dmdCodeChars.push(ch);
+    dmdUpdateStreak();
+  } else {
+    balance -= dmdCurrentBet;
+    dmdMsg('✗ Only ' + total + ' pts — need ' + dmdWinTarget + '. −' + dmdCurrentBet + ' gp', '#cc4444');
+    showToast('💀', 'Not enough — −' + dmdCurrentBet + ' gp', 'error');
+    dmdStreak = 0;
+    dmdCodeChars = [];
+    dmdUpdateStreak();
+  }
+  dmdCurrentBet = 0;
+  document.getElementById('dmdBetDisplay').textContent = '0 gp';
+  updateBalanceDisplay();
+  dmdUpdatePurse();
+  dmdSetButtons(false);
+}
+
+function dmdUpdateStreak() {
+  for(var i = 0; i < 5; i++) {
+    var slot = document.getElementById('ss' + i);
+    if(i < dmdCodeChars.length) {
+      slot.textContent = dmdCodeChars[i];
+      slot.className = dmdCodeChars.length === 5 ? 'streak-slot complete' : 'streak-slot filled';
+    } else {
+      slot.textContent = '?';
+      slot.className = 'streak-slot';
+    }
+  }
+  var msg = document.getElementById('streakMsg');
+  var reveal = document.getElementById('codeReveal');
+  if(dmdStreak === 0) {
+    msg.textContent = 'Win 5 rounds in a row to reveal all 5 characters.';
+    reveal.style.display = 'none';
+  } else if(dmdStreak >= 5) {
+    msg.textContent = '✦ All 5 characters revealed!';
+    msg.style.color = '#f0b840';
+    document.getElementById('fullCode').textContent = dmdCodeChars.join('');
+    reveal.style.display = 'block';
+    var sleeve = shopItems.magic.find(function(i) { return i.id === 112; });
+    if(sleeve && !sleeve.unlocked) {
+      sleeve.unlocked = true;
+      renderGrid('magic');
+      showToast('⚙️', 'A secret item appeared in the Magic Shop!', 'success');
+    }
+  } else {
+    var left = 5 - dmdStreak;
+    msg.textContent = '🔥 ' + dmdStreak + ' in a row — ' + left + ' more to complete the code!';
+    msg.style.color = '#c9922a';
+    reveal.style.display = 'none';
+  }
+}
+
+// sync on tab switch
+var _origSwitch2 = switchTab;
+switchTab = function(tab, btn) {
+  _origSwitch2(tab, btn);
+  if(tab === 'general') { bjUpdatePurse(); dmdUpdatePurse(); }
+};
+
+// init deck
+dmdBuildDeck();
+dmdUpdateStreak();
+</script>
 </body>
 </html>
