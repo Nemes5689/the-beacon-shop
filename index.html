@@ -1630,7 +1630,7 @@ var runeCurrentRound = 0;   // 0-indexed, rounds 0-5 = seq length 3-8
 var runeShowingSeq = false;
 var runeTattooUnlocked = false;
 var runeFailCount = 0;
-var RUNE_ROUNDS = [3];
+var RUNE_ROUNDS = [3,4,5,6,7,8,9,10,11,12];
 
 function runeBuildGrid() {
   var grid = document.getElementById('runeGrid');
@@ -1655,7 +1655,7 @@ function runeMsg(text, color) {
 
 function runeUpdateStatus() {
   var seqLen = RUNE_ROUNDS[runeCurrentRound] || '—';
-  document.getElementById('runeRound').textContent = runeCurrentRound < RUNE_ROUNDS.length ? (runeCurrentRound + 1) + ' / 1' : '✦';
+  document.getElementById('runeRound').textContent = runeCurrentRound < RUNE_ROUNDS.length ? (runeCurrentRound + 1) + ' / 10' : '✦';
   document.getElementById('runeSeqLen').textContent = runeShowingSeq ? seqLen : (runeCurrentRound < RUNE_ROUNDS.length ? seqLen : '—');
   document.getElementById('runeProgress').textContent = runeShowingSeq ? '...' : (runePlayerInput.length + ' / ' + (RUNE_ROUNDS[runeCurrentRound] || '—'));
 }
