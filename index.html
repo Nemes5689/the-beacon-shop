@@ -444,7 +444,7 @@
   <!-- GENERAL STORE TAB -->
   <div class="tab-panel" id="panel-general">
     <div class="merchant-intro">
-      <div class="merchant-quote">"🏪 Honest goods at honest prices. No sorcery here — just solid merchandise."</div>
+      <div class="merchant-quote">"🏪 Honest goods at honest prices. No sorcery here — just solid craftsmanship."</div>
       <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
     </div>
 
@@ -611,7 +611,7 @@
         <div style="text-align:center;margin-top:0.6rem;">
           <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:0.88rem;color:#c9922a;line-height:1.7;text-align:center;background:rgba(0,0,0,0.25);border:1px solid rgba(201,146,42,0.2);border-radius:6px;padding:0.6rem 1rem;">
             Bank <strong>15+ points</strong> to win your bet &nbsp;·&nbsp;
-            Draw <strong>4+ cards</strong> and bank to win <span style="color:#f0b840;font-size:1.05rem;font-weight:700;">51×</span> your bet &nbsp;·&nbsp;
+            Draw <strong>4+ cards</strong> and bank to win <span style="color:#f0b840;font-size:1.05rem;font-weight:700;">21×</span> your bet &nbsp;·&nbsp;
             A repeated suit 💀 <strong>busts</strong> your pile
           </div>
         </div>
@@ -709,7 +709,7 @@
   <!-- BLACKSMITH TAB -->
   <div class="tab-panel" id="panel-smith">
     <div class="merchant-intro">
-      <div class="merchant-quote">"🔨 Forged in fire, tested in blood. If it breaks, come back and I'll make it tough."</div>
+      <div class="merchant-quote">"🔨 Forged in fire, tested in blood. If it breaks, come back and I'll make it right."</div>
       <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
     </div>
     <div class="filter-bar" id="filterBar-smith">
@@ -1520,9 +1520,9 @@ function dmdDraw() {
       return;
     }
     if(cardCount === 3) {
-      dmdMsg('⚡ One more card = 51× payout if you bank! ' + total + ' pts so far...', '#f0b840');
+      dmdMsg('⚡ One more card = 21× payout if you bank! ' + total + ' pts so far...', '#f0b840');
     } else if(cardCount >= 4) {
-      dmdMsg('🌟 ' + cardCount + ' cards! Bank now for 51× — ' + total + ' pts', '#f0b840');
+      dmdMsg('🌟 ' + cardCount + ' cards! Bank now for 21× — ' + total + ' pts', '#f0b840');
     } else if(total >= dmdWinTarget) {
       dmdMsg('✦ ' + total + ' pts — bank now or push your luck!', '#f0b840');
     } else {
@@ -1539,10 +1539,10 @@ function dmdBank() {
   var cardCount = dmdPileCards.length;
   if(total >= dmdWinTarget) {
     if(cardCount >= 4) {
-      var winnings = dmdCurrentBet * 51;
+      var winnings = dmdCurrentBet * 21;
       balance += winnings;
-      dmdMsg('🌟 ' + cardCount + ' cards, ' + total + ' pts — FIFTY ONE TIMES! +' + winnings + ' gp', '#f0b840');
-      showToast('🌟', '51× payout! +' + winnings + ' gp', 'success');
+      dmdMsg('🌟 ' + cardCount + ' cards, ' + total + ' pts — TWENTY ONE TIMES! +' + winnings + ' gp', '#f0b840');
+      showToast('🌟', '21× payout! +' + winnings + ' gp', 'success');
     } else {
       balance += dmdCurrentBet;
       dmdMsg('✓ Banked ' + total + ' pts — you win! +' + dmdCurrentBet + ' gp', '#4eba70');
