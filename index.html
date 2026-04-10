@@ -729,6 +729,102 @@
       <div class="merchant-quote">"🔨 Forged in fire, tested in blood. If it breaks, come back and I'll make it right."</div>
       <div class="divider"><div class="divider-line"></div><span class="divider-gem">✦</span><div class="divider-line"></div></div>
     </div>
+
+    <!-- BLUEPRINT RIDDLE -->
+    <div style="max-width:720px;margin:0 auto 2.5rem;">
+      <div style="background:rgba(0,0,0,0.4);border:2px solid rgba(90,143,212,0.4);border-radius:10px;padding:1.5rem;">
+        <div style="text-align:center;margin-bottom:1rem;">
+          <div style="font-family:'Cinzel Decorative',cursive;color:#90c4ff;font-size:1rem;text-shadow:0 0 10px rgba(90,143,212,0.5);">📜 The Smith's Blueprint Riddle</div>
+          <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.13em;text-transform:uppercase;color:#4a6a8a;margin-top:3px;">Match each blueprint to the correct weapon — before time runs out</div>
+        </div>
+
+        <!-- TIMER + STATUS -->
+        <div style="display:flex;justify-content:center;gap:2rem;margin-bottom:1rem;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#4a6a8a;">Time Left</div>
+            <div id="bpTimer" style="font-family:'Cinzel Decorative',cursive;font-size:1.4rem;font-weight:700;color:#90c4ff;">1:30</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#4a6a8a;">Matched</div>
+            <div id="bpMatched" style="font-family:'Cinzel',serif;font-size:1.4rem;font-weight:700;color:#90c4ff;">0 / 7</div>
+          </div>
+        </div>
+
+        <!-- GAME AREA -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;" id="bpGameArea">
+          <div>
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:#4a6a8a;margin-bottom:6px;">📋 Blueprint Fragments</div>
+            <div id="bpClues" style="display:flex;flex-direction:column;gap:6px;"></div>
+          </div>
+          <div>
+            <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:#4a6a8a;margin-bottom:6px;">⚔️ Weapons</div>
+            <div id="bpWeapons" style="display:flex;flex-direction:column;gap:6px;"></div>
+          </div>
+        </div>
+
+        <!-- MESSAGE -->
+        <div id="bpMsg" style="text-align:center;font-family:'Cinzel',serif;font-size:0.82rem;font-weight:700;min-height:1.2rem;margin-bottom:0.8rem;color:#90c4ff;"></div>
+
+        <!-- BUTTONS -->
+        <div style="display:flex;gap:0.6rem;justify-content:center;">
+          <button id="bpStartBtn" class="bj-action" onclick="bpStart()" style="border-color:rgba(90,143,212,0.5);">📜 Begin Trial</button>
+        </div>
+
+        <!-- WIN BOX -->
+        <div id="bpWinBox" style="display:none;margin-top:1.2rem;background:rgba(0,0,0,0.5);border:2px solid #90c4ff;border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-family:'Cinzel Decorative',cursive;color:#90c4ff;font-size:0.9rem;margin-bottom:0.4rem;">✦ The Smith Nods With Respect ✦</div>
+          <div style="font-family:'IM Fell English',serif;font-style:italic;color:#e8d49a;font-size:0.82rem;line-height:1.6;">"Not many can read my old blueprints. Pick any weapon or armour from my rack — it is yours, no charge."</div>
+          <div style="margin-top:0.8rem;font-family:'Cinzel',serif;font-size:0.72rem;color:#5a8fd4;letter-spacing:0.1em;text-transform:uppercase;">The Unbreakable Nail has appeared in the Blacksmith tab</div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .bp-clue {
+        background: rgba(0,0,0,0.4);
+        border: 2px solid rgba(90,143,212,0.25);
+        border-radius:6px;
+        padding: 0.5rem 0.7rem;
+        font-family: 'IM Fell English', serif;
+        font-style: italic;
+        font-size: 0.78rem;
+        color: #c8d8e8;
+        cursor: pointer;
+        transition: all 0.2s;
+        line-height: 1.4;
+        user-select: none;
+      }
+      .bp-clue:hover:not(.matched):not(.disabled) { border-color: #90c4ff; background: rgba(90,143,212,0.1); }
+      .bp-clue.selected { border-color: #90c4ff; background: rgba(90,143,212,0.2); box-shadow: 0 0 10px rgba(90,143,212,0.4); }
+      .bp-clue.matched { border-color: #3a8a40; background: rgba(45,138,78,0.15); color: #a0d0a0; cursor: default; opacity:0.75; }
+      .bp-clue.wrong { border-color: #cc4444; background: rgba(139,26,26,0.2); animation: bpShake 0.3s ease; }
+      .bp-weapon {
+        background: rgba(0,0,0,0.4);
+        border: 2px solid rgba(90,143,212,0.25);
+        border-radius: 6px;
+        padding: 0.5rem 0.7rem;
+        font-family: 'Cinzel', serif;
+        font-size: 0.78rem;
+        color: #90c4ff;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        user-select: none;
+      }
+      .bp-weapon:hover:not(.matched):not(.disabled) { border-color: #90c4ff; background: rgba(90,143,212,0.1); }
+      .bp-weapon.matched { border-color: #3a8a40; background: rgba(45,138,78,0.15); color: #a0d0a0; cursor: default; opacity:0.75; }
+      .bp-weapon.wrong { border-color: #cc4444; background: rgba(139,26,26,0.2); animation: bpShake 0.3s ease; }
+      @keyframes bpShake {
+        0%,100% { transform: translateX(0); }
+        25% { transform: translateX(-6px); }
+        75% { transform: translateX(6px); }
+      }
+      #bpTimer.danger { color: #cc4444; animation: bpPulse 0.5s ease infinite alternate; }
+      @keyframes bpPulse { from { opacity:1; } to { opacity:0.4; } }
+    </style>
+
     <div class="filter-bar" id="filterBar-smith">
       <span class="filter-label">Filter:</span>
       <button class="filter-btn active" onclick="setFilter('smith','all',this)">All</button>
@@ -869,6 +965,7 @@
       { id:408, name:"Silvered Longsword", icon:"🌙", desc:"A longsword coated in silver. Bypasses resistance and immunity to non-magical/non-silvered weapons for certain monsters.", price:115, rarity:"common", category:"🗡️ Blades", stock:2, link:null },
       { id:410, name:"Mithral Armour", icon:"💎", desc:"Any medium or heavy armour. No Strength requirement, no Stealth disadvantage. Lightweight miracle of dwarven craft.", price:400, rarity:"uncommon", category:"🛡️ Armour", stock:1, link:"http://dnd2024.wikidot.com/magic-item:mithral-armor" },
       { id:411, name:"Custom Commission", icon:"🔨", desc:"Bring materials and a design. Aldric's smith will craft to your specifications. Price ranges from 50 to 1,000 gp depending on complexity, materials, and time required — this books a consultation to discuss the work.", price:50, rarity:"service", category:"🔨 Service", stock:Infinity, link:null },
+      { id:412, name:"The Unbreakable Nail", icon:"🔩", desc:"<em>Wondrous Item, Common</em><br><br>A single nail forged from an unknown black iron, cool to the touch and perfectly straight. No mundane force can bend, break or pull it free once driven home — not a crowbar, not a battering ram, not a giant's fist.<br><br><strong>Pin It.</strong> Drive the nail into any mundane surface as an action. A door, gate, chest, or hatch pinned with this nail cannot be forced open by mundane means. It can still be unlocked normally if a key or mechanism exists.<br><br><strong>Remove It.</strong> Only the creature that drove the nail may pull it free, as an action.<br><br><em>The smith says nothing when he hands it over. He just taps his temple twice.</em>", price:0, rarity:"common", category:"🔨 Service", stock:1, link:null, hidden:true },
     ]
   };
 
@@ -1099,7 +1196,8 @@
             <div class="item-stock">${cartQty > 0 ? `${cartQty} in satchel · ` : ''}${stockLabel}</div>
           </div>
           <div style="display:flex;gap:4px;align-items:center;">
-            ${item.freePickable ? '<button class="add-to-cart-btn" onclick="runeClaimFree(' + item.id + ')" style="background:linear-gradient(135deg,#6b1a2a,#c0364a);border-color:#ff8899;">🩸 Claim</button>' : ''}
+            ${item.freePickable && tab === 'tattoo' ? '<button class="add-to-cart-btn" onclick="runeClaimFree(' + item.id + ')" style="background:linear-gradient(135deg,#6b1a2a,#c0364a);border-color:#ff8899;">🩸 Claim</button>' : ''}
+            ${item.freePickable && tab === 'smith' ? '<button class="add-to-cart-btn" onclick="bpClaimFree(' + item.id + ')" style="background:linear-gradient(135deg,#1a3a5a,#2a6b9a);border-color:#90c4ff;">🔨 Claim</button>' : ''}
             ${!item.freePickable ? '<button class="add-to-cart-btn ' + (inCart ? 'in-cart' : '') + '" onclick="addToCart(' + item.id + ')" ' + (outOfStock || atMax ? 'disabled' : '') + '>' + (outOfStock ? 'Sold Out' : atMax ? '✓ Max' : inCart ? '+ More' : '+ Add') + '</button>' : ''}
           </div>
         </div>
@@ -1776,13 +1874,21 @@ function runePlayerClick(idx) {
 function runeClaimFree(id) {
   var item = shopItems.tattoo.find(function(i) { return i.id === id; });
   if(!item || !item.freePickable) return;
-  // remove freePickable from all tattoos
   shopItems.tattoo.forEach(function(i) { delete i.freePickable; });
-  // set this one to price 0 and add to cart
   item.price = 0;
   addToCart(id);
   renderGrid('tattoo');
   showToast('🩸', item.name + ' claimed — Gabriella\'s gift!', 'success');
+}
+
+function bpClaimFree(id) {
+  var item = shopItems.smith.find(function(i) { return i.id === id; });
+  if(!item || !item.freePickable) return;
+  shopItems.smith.forEach(function(i) { delete i.freePickable; });
+  item.price = 0;
+  addToCart(id);
+  renderGrid('smith');
+  showToast('🔨', item.name + ' claimed — the Smith\'s gift!', 'success');
 }
 
 function runeEnableFreePick() {
@@ -1865,6 +1971,12 @@ function doLogin() {
       });
       renderGrid('tattoo');
     }
+    if(data.puzzlesDone.indexOf('blueprint') !== -1) {
+      bpSmithUnlocked = true;
+      var nail = shopItems.smith.find(function(i) { return i.id === 412; });
+      if(nail) nail.unlocked = true;
+      renderGrid('smith');
+    }
     if(data.puzzlesDone.indexOf('dmd') !== -1) {
       dmdStreak = 5;
       dmdCodeChars = ['A','S','T','R','A'];
@@ -1893,6 +2005,7 @@ function saveAndLogout() {
   if(!data.puzzlesDone) data.puzzlesDone = [];
   if(runeTattooUnlocked && data.puzzlesDone.indexOf('rune') === -1) data.puzzlesDone.push('rune');
   if(dmdStreak >= 5 && data.puzzlesDone.indexOf('dmd') === -1) data.puzzlesDone.push('dmd');
+  if(bpSmithUnlocked && data.puzzlesDone.indexOf('blueprint') === -1) data.puzzlesDone.push('blueprint');
 
   savePlayerData(currentPlayer, data);
   showToast('\ud83d\udcbe', 'Saved! See you next time, ' + PLAYERS[currentPlayer].name + '!', 'success');
@@ -1938,6 +2051,165 @@ dmdUpdateStreak = function() {
   _origDmdStreak();
   if(dmdStreak >= 5) grantPuzzleBonus('dmd', "Dead Man's reward");
 };
+</script>
+<!-- BLUEPRINT RIDDLE SCRIPT -->
+<script>
+var BP_PAIRS = [
+  { clue: "Light in hand, deceptive in reach. It hides under a cloak as easily as it draws blood. One hand, always one hand.", weapon: "Shortsword" },
+  { clue: "The knight's companion. Sings when drawn, versatile enough for shield or two hands. Neither the biggest nor the smallest.", weapon: "Longsword" },
+  { clue: "No subtlety here. Heavy, loud, built for those who laugh when they swing. Two hands, or it swings you.", weapon: "Greataxe" },
+  { clue: "Fires from the shadows. Fits under a coat, loads slow, but a bolt between the eyes asks no questions.", weapon: "Hand Crossbow" },
+  { clue: "Rings when it moves. Soldiers wear it and curse the stairs. Heavy, reliable, stops most things that aren't magic.", weapon: "Chain Mail" },
+  { clue: "The finest a man can wear without divine help. Slows you down, needs strength to lift, but turns away almost anything.", weapon: "Plate Armour" },
+  { clue: "Moonlight runs off it like water. Same steel as the sword beside it, but certain things fear what this is dipped in.", weapon: "Silvered Longsword" }
+];
+
+var bpSelected = null;
+var bpMatchedCount = 0;
+var bpTimerInterval = null;
+var bpTimeLeft = 90;
+var bpActive = false;
+var bpSmithUnlocked = false;
+var bpShuffledWeapons = [];
+
+function bpShuffle(arr) {
+  var a = arr.slice();
+  for(var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i+1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function bpFormatTime(s) {
+  return Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60);
+}
+
+function bpMsg(text, color) {
+  var el = document.getElementById('bpMsg');
+  el.textContent = text;
+  el.style.color = color || '#90c4ff';
+}
+
+function bpStart() {
+  document.getElementById('bpStartBtn').style.display = 'none';
+  document.getElementById('bpWinBox').style.display = 'none';
+  bpMatchedCount = 0;
+  bpSelected = null;
+  bpActive = true;
+  bpTimeLeft = 90;
+  document.getElementById('bpTimer').className = '';
+  document.getElementById('bpTimer').textContent = bpFormatTime(bpTimeLeft);
+  document.getElementById('bpMatched').textContent = '0 / 7';
+  bpMsg('Select a blueprint fragment, then click the matching weapon.');
+  bpBuildBoard();
+  if(bpTimerInterval) clearInterval(bpTimerInterval);
+  bpTimerInterval = setInterval(bpTick, 1000);
+}
+
+function bpTick() {
+  bpTimeLeft--;
+  document.getElementById('bpTimer').textContent = bpFormatTime(bpTimeLeft);
+  if(bpTimeLeft <= 15) document.getElementById('bpTimer').className = 'danger';
+  if(bpTimeLeft <= 0) {
+    clearInterval(bpTimerInterval);
+    bpActive = false;
+    bpMsg('Time is up! The smith shakes his head. Try again.', '#cc4444');
+    document.querySelectorAll('.bp-clue,.bp-weapon').forEach(function(el) { el.classList.add('disabled'); el.style.cursor='default'; });
+    setTimeout(function() { document.getElementById('bpStartBtn').style.display='inline-block'; }, 1500);
+  }
+}
+
+function bpBuildBoard() {
+  var cluesShuffled = bpShuffle(BP_PAIRS);
+  bpShuffledWeapons = bpShuffle(BP_PAIRS.map(function(p){ return p.weapon; }));
+
+  var cluesEl = document.getElementById('bpClues');
+  var weaponsEl = document.getElementById('bpWeapons');
+  cluesEl.innerHTML = '';
+  weaponsEl.innerHTML = '';
+
+  cluesShuffled.forEach(function(pair) {
+    var div = document.createElement('div');
+    div.className = 'bp-clue';
+    div.textContent = pair.clue;
+    div.dataset.weapon = pair.weapon;
+    div.onclick = function() { bpSelectClue(div); };
+    cluesEl.appendChild(div);
+  });
+
+  bpShuffledWeapons.forEach(function(weapon) {
+    var div = document.createElement('div');
+    div.className = 'bp-weapon';
+    div.textContent = weapon;
+    div.dataset.weapon = weapon;
+    div.onclick = function() { bpSelectWeapon(div); };
+    weaponsEl.appendChild(div);
+  });
+}
+
+function bpSelectClue(el) {
+  if(!bpActive || el.classList.contains('matched') || el.classList.contains('disabled')) return;
+  document.querySelectorAll('.bp-clue').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+  bpSelected = el;
+  bpMsg('Now click the matching weapon on the right.');
+}
+
+function bpSelectWeapon(el) {
+  if(!bpActive || !bpSelected || el.classList.contains('matched') || el.classList.contains('disabled')) return;
+  var correctWeapon = bpSelected.dataset.weapon;
+  if(el.dataset.weapon === correctWeapon) {
+    bpSelected.classList.remove('selected');
+    bpSelected.classList.add('matched');
+    bpSelected.onclick = null;
+    el.classList.add('matched');
+    el.onclick = null;
+    bpSelected = null;
+    bpMatchedCount++;
+    document.getElementById('bpMatched').textContent = bpMatchedCount + ' / 7';
+    if(bpMatchedCount === 7) {
+      clearInterval(bpTimerInterval);
+      bpActive = false;
+      bpMsg('All 7 matched! The smith is impressed.', '#4eba70');
+      setTimeout(function() {
+        document.getElementById('bpWinBox').style.display = 'block';
+        if(!bpSmithUnlocked) {
+          bpSmithUnlocked = true;
+          bpEnableFreePick();
+        }
+      }, 600);
+    } else {
+      bpMsg('Correct! ' + (7 - bpMatchedCount) + ' remaining.', '#4eba70');
+    }
+  } else {
+    bpSelected.classList.add('wrong');
+    el.classList.add('wrong');
+    bpMsg('Wrong match! Everything shuffles...', '#cc4444');
+    var clue = bpSelected;
+    setTimeout(function() {
+      bpSelected = null;
+      bpActive = false;
+      clearInterval(bpTimerInterval);
+      setTimeout(function() {
+        bpActive = true;
+        bpMatchedCount = 0;
+        document.getElementById('bpMatched').textContent = '0 / 7';
+        bpMsg('Starting over — pick carefully this time.');
+        bpBuildBoard();
+        bpTimerInterval = setInterval(bpTick, 1000);
+      }, 800);
+    }, 700);
+  }
+}
+
+function bpEnableFreePick() {
+  var nail = shopItems.smith.find(function(i) { return i.id === 412; });
+  if(nail) nail.unlocked = true;
+  renderGrid('smith');
+  showToast('📜', 'The Unbreakable Nail is yours — the Smith\'s gift!', 'success');
+  grantPuzzleBonus('blueprint', "Smith's reward");
+}
 </script>
 </body>
 </html>
