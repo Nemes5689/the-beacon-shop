@@ -343,6 +343,22 @@
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="position:fixed;inset:0;background:linear-gradient(180deg,#1a0a02 0%,#2a1a0e 100%);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:linear-gradient(180deg,#2a1a0e,#1c1008);border:2px solid var(--gold);border-radius:10px;padding:2.5rem 2rem;max-width:380px;width:100%;box-shadow:0 0 60px rgba(201,146,42,0.3);text-align:center;">
+    <div style="font-size:3rem;margin-bottom:0.8rem;">⚜</div>
+    <div style="font-family:'Cinzel Decorative',cursive;color:var(--gold-bright);font-size:1.2rem;margin-bottom:0.3rem;text-shadow:0 0 15px rgba(240,184,64,0.5);">The Beacon</div>
+    <div style="font-family:'Cinzel',serif;font-size:0.7rem;color:var(--parchment-dark);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:2rem;opacity:0.7;">Enter your adventurer code</div>
+    <input id="loginInput" type="text" maxlength="20" placeholder="Your code..." autocomplete="off"
+      style="width:100%;background:rgba(0,0,0,0.4);border:2px solid var(--gold-dim);border-radius:6px;padding:0.8rem 1rem;color:var(--gold-bright);font-family:'Cinzel Decorative',cursive;font-size:1.1rem;text-align:center;letter-spacing:0.15em;text-transform:uppercase;outline:none;box-sizing:border-box;margin-bottom:0.8rem;"
+      onkeydown="if(event.key==='Enter')doLogin()" oninput="this.value=this.value.toUpperCase()"/>
+    <div id="loginError" style="font-family:'Cinzel',serif;font-size:0.75rem;color:#cc4444;min-height:1rem;margin-bottom:0.8rem;"></div>
+    <button onclick="doLogin()" style="width:100%;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;border-radius:6px;padding:0.8rem;color:var(--ink);font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;">Enter the Shop</button>
+    <div style="margin-top:1.5rem;font-family:'IM Fell English',serif;font-style:italic;font-size:0.78rem;color:var(--gold-dim);opacity:0.6;">"Only those known to Gabriella may enter."</div>
+  </div>
+</div>
+
+
 <!-- HEADER -->
 <header class="shop-header">
   <div class="header-inner">
@@ -364,6 +380,7 @@
         🛒 Satchel
         <span class="cart-badge" id="cartBadge">0</span>
       </button>
+      <button onclick="saveAndLogout()" style="background:linear-gradient(135deg,#1a0a02,#3d1f0a);border:1px solid var(--gold-dim);border-radius:6px;padding:0.5rem 0.9rem;color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gold-dim)'">💾 Save & Log Out</button>
     </div>
   </div>
 </header>
@@ -1780,6 +1797,147 @@ function runeEnableFreePick() {
 }
 
 runeBuildGrid();
+</script>
+
+
+<!-- PLAYER SYSTEM -->
+<script>
+var PLAYERS = {
+  'ZSIGA':   { name: 'Zsiga',   startGold: 1000 },
+  'MARCELL': { name: 'Marcell', startGold: 1000 },
+  'BENCE':   { name: 'Bence',   startGold: 1000 },
+  'MOZI':    { name: 'Mozi',    startGold: 1000 },
+  'SZILARD': { name: 'Szilard', startGold: 1000 },
+  'SOLYOM':  { name: 'Solyom',  startGold: 1000 },
+  'DMCSON':  { name: 'Dungeon Master', startGold: 999999999, dm: true }
+};
+
+var currentPlayer = null;
+
+function getPlayerData(code) {
+  var raw = localStorage.getItem('beacon_' + code);
+  if(raw) { try { return JSON.parse(raw); } catch(e) {} }
+  return null;
+}
+
+function savePlayerData(code, data) {
+  localStorage.setItem('beacon_' + code, JSON.stringify(data));
+}
+
+function doLogin() {
+  var code = document.getElementById('loginInput').value.trim().toUpperCase();
+  var player = PLAYERS[code];
+  if(!player) {
+    document.getElementById('loginError').textContent = 'Unknown adventurer. Check your code.';
+    return;
+  }
+
+  currentPlayer = code;
+  var data = getPlayerData(code);
+  if(!data) {
+    data = { gold: player.startGold, log: [], puzzlesDone: [] };
+    savePlayerData(code, data);
+  }
+
+  balance = data.gold;
+  updateBalanceDisplay();
+  updateCartFooter();
+  bjUpdatePurse();
+  dmdUpdatePurse();
+
+  if(data.log && data.log.length > 0) {
+    var logEl = document.getElementById('purchaseLog');
+    logEl.innerHTML = '';
+    data.log.forEach(function(entry) {
+      var li = document.createElement('li');
+      li.className = 'log-item';
+      var qtyText = entry.qty > 1 ? ' x' + entry.qty : '';
+      li.innerHTML = '<span>' + entry.name + qtyText + '</span><span class="log-amount">-' + entry.cost.toLocaleString() + ' gp</span>';
+      logEl.appendChild(li);
+    });
+  }
+
+  if(data.puzzlesDone) {
+    if(data.puzzlesDone.indexOf('rune') !== -1) {
+      runeTattooUnlocked = true;
+      shopItems.tattoo.forEach(function(item) {
+        if(item.rarity === 'common' || item.rarity === 'uncommon') item.freePickable = true;
+      });
+      renderGrid('tattoo');
+    }
+    if(data.puzzlesDone.indexOf('dmd') !== -1) {
+      dmdStreak = 5;
+      dmdCodeChars = ['A','S','T','R','A'];
+      dmdUpdateStreak();
+    }
+  }
+
+  document.querySelector('.shop-subtitle').textContent = 'Welcome, ' + player.name + ' \u2014 ' + data.gold.toLocaleString() + ' gp';
+  document.getElementById('loginScreen').style.display = 'none';
+}
+
+function saveAndLogout() {
+  if(!currentPlayer) return;
+  var data = getPlayerData(currentPlayer) || { gold: 0, log: [], puzzlesDone: [] };
+  data.gold = balance;
+
+  var logItems = document.querySelectorAll('#purchaseLog .log-item');
+  data.log = [];
+  logItems.forEach(function(li) {
+    var spans = li.querySelectorAll('span');
+    var name = spans[0] ? spans[0].textContent.trim() : '';
+    var costText = spans[1] ? spans[1].textContent.replace(/[^0-9]/g, '') : '0';
+    data.log.push({ name: name, qty: 1, cost: parseInt(costText) || 0 });
+  });
+
+  if(!data.puzzlesDone) data.puzzlesDone = [];
+  if(runeTattooUnlocked && data.puzzlesDone.indexOf('rune') === -1) data.puzzlesDone.push('rune');
+  if(dmdStreak >= 5 && data.puzzlesDone.indexOf('dmd') === -1) data.puzzlesDone.push('dmd');
+
+  savePlayerData(currentPlayer, data);
+  showToast('\ud83d\udcbe', 'Saved! See you next time, ' + PLAYERS[currentPlayer].name + '!', 'success');
+
+  setTimeout(function() {
+    currentPlayer = null;
+    balance = 0;
+    Object.keys(cart).forEach(function(k) { delete cart[k]; });
+    updateBalanceDisplay();
+    updateCartFooter();
+    document.querySelector('.shop-subtitle').textContent = 'Purveyor of Rare & Wondrous Goods';
+    document.getElementById('loginInput').value = '';
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('loginScreen').style.display = 'flex';
+  }, 1500);
+}
+
+function grantPuzzleBonus(puzzleKey, label) {
+  if(!currentPlayer) return;
+  var data = getPlayerData(currentPlayer) || { gold: balance, log: [], puzzlesDone: [] };
+  if(!data.puzzlesDone) data.puzzlesDone = [];
+  if(data.puzzlesDone.indexOf(puzzleKey) === -1) {
+    balance += 500;
+    updateBalanceDisplay();
+    updateCartFooter();
+    bjUpdatePurse();
+    dmdUpdatePurse();
+    showToast('\u2728', '+500 gp \u2014 ' + label + '!', 'success');
+    data.puzzlesDone.push(puzzleKey);
+    data.gold = balance;
+    savePlayerData(currentPlayer, data);
+  }
+}
+
+var _origRuneEnable = runeEnableFreePick;
+runeEnableFreePick = function() {
+  _origRuneEnable();
+  grantPuzzleBonus('rune', "Gabriella's reward");
+};
+
+var _origDmdStreak = dmdUpdateStreak;
+dmdUpdateStreak = function() {
+  _origDmdStreak();
+  if(dmdStreak >= 5) grantPuzzleBonus('dmd', "Dead Man's reward");
+};
 </script>
 </body>
 </html>
